@@ -12,12 +12,15 @@ internal enum MovementPattern
 
 internal sealed class EntitySimulator
 {
-    private readonly MovementPattern _pattern;
     private readonly Vector3Double _circleCenter;
-    private readonly double _speed;
+    private double _speed;
     private double _angle;
 
     public int EntityId { get; }
+
+    public MovementPattern Pattern { get; }
+
+    public double Speed { get; }
 
     public Vector3Double Position { get; private set; }
 
@@ -30,7 +33,8 @@ internal sealed class EntitySimulator
     public EntitySimulator(int entityId, MovementPattern pattern, Vector3Double startPosition, double speed)
     {
         EntityId = entityId;
-        _pattern = pattern;
+        Pattern = pattern;
+        Speed = speed;
         _circleCenter = startPosition;
         _speed = speed;
 
@@ -44,7 +48,7 @@ internal sealed class EntitySimulator
 
     public void Tick(double deltaSeconds)
     {
-        switch (_pattern)
+        switch (Pattern)
         {
             case MovementPattern.Stationary:
                 Velocity = Vector3Double.Zero;

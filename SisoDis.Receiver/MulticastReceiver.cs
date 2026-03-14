@@ -129,9 +129,9 @@ internal sealed class MulticastReceiver : IDisposable
         {
             return pdu.PdType switch
             {
+                1 => EntityStatePdu.Deserialize(data, 0),
                 2 => FirePdu.Deserialize(data, 0),
                 3 => DetonationPdu.Deserialize(data, 0),
-                1 => EntityStatePdu.Deserialize(data, 0),
                 4 => CollisionPdu.Deserialize(data, 0),
                 5 => CollisionElasticPdu.Deserialize(data, 0),
                 6 => EntityStateUpdatePdu.Deserialize(data, 0),
@@ -139,6 +139,14 @@ internal sealed class MulticastReceiver : IDisposable
                 20 => MunitionPdu.Deserialize(data, 0),
                 21 => DesignatorPdu.Deserialize(data, 0),
                 22 => ElectromagneticEmissionPdu.Deserialize(data, 0),
+                23 => CreateEntityPdu.Deserialize(data, 0),
+                24 => RemoveEntityPdu.Deserialize(data, 0),
+                25 => StartResumePdu.Deserialize(data, 0),
+                26 => StopFreezePdu.Deserialize(data, 0),
+                27 => AcknowledgePdu.Deserialize(data, 0),
+                28 => ActionRequestPdu.Deserialize(data, 0),
+                29 => ActionResponsePdu.Deserialize(data, 0),
+                30 => DataQueryPdu.Deserialize(data, 0),
                 _ => null
             };
         }

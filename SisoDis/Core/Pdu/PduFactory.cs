@@ -88,5 +88,37 @@ public sealed class PduFactory
         // Register Electromagnetic Emission PDU (Type code = 22) - IEEE §5.3.12 Table 5-4
         if (!IsRegistered(ElectromagneticEmissionPdu.PdTypeValue))
             RegisterPduType(ElectromagneticEmissionPdu.PdTypeValue, typeof(ElectromagneticEmissionPdu));
+
+        // Register Create Entity PDU (Type code = 23) - IEEE §5.3.6.1 Table 5-4
+        if (!IsRegistered(CreateEntityPdu.PdTypeValue))
+            RegisterPduType(CreateEntityPdu.PdTypeValue, typeof(CreateEntityPdu));
+
+        // Register Remove Entity PDU (Type code = 24) - IEEE §5.3.6.2 Table 5-4
+        if (!IsRegistered(RemoveEntityPdu.PdTypeValue))
+            RegisterPduType(RemoveEntityPdu.PdTypeValue, typeof(RemoveEntityPdu));
+
+        // Register Start/Resume PDU (Type code = 25) - IEEE §5.3.6.3 Table 5-4
+        if (!IsRegistered(StartResumePdu.PdTypeValue))
+            RegisterPduType(StartResumePdu.PdTypeValue, typeof(StartResumePdu));
+
+        // Register Stop/Freeze PDU (Type code = 26) - IEEE §5.3.6.4 Table 5-4
+        if (!IsRegistered(StopFreezePdu.PdTypeValue))
+            RegisterPduType(StopFreezePdu.PdTypeValue, typeof(StopFreezePdu));
+
+        // Register Acknowledge PDU (Type code = 27) - IEEE §5.3.6.5 Table 5-4
+        if (!IsRegistered(AcknowledgePdu.PdTypeValue))
+            RegisterPduType(AcknowledgePdu.PdTypeValue, typeof(AcknowledgePdu));
+
+        // Register Action Request PDU (Type code = 28) - IEEE §5.3.6.6 Table 5-4
+        if (!IsRegistered(ActionRequestPdu.PdTypeValue))
+            RegisterPduType(ActionRequestPdu.PdTypeValue, typeof(ActionRequestPdu));
+
+        // Register Action Response PDU (Type code = 29) - IEEE §5.3.6.7 Table 5-4
+        if (!IsRegistered(ActionResponsePdu.PdTypeValue))
+            RegisterPduType(ActionResponsePdu.PdTypeValue, typeof(ActionResponsePdu));
+
+        // Register Data Query PDU (Type code = 30) - IEEE §5.3.6.8 Table 5-4
+        if (!IsRegistered(DataQueryPdu.PdTypeValue))
+            RegisterPduType(DataQueryPdu.PdTypeValue, typeof(DataQueryPdu));
     }
 }

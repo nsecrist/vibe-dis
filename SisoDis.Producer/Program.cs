@@ -109,6 +109,22 @@ internal static class Program
             {
                 DesignatorDialog(state);
             }
+            else if (key == Key.F7)
+            {
+                StartSimDialog(state);
+            }
+            else if (key == Key.F8)
+            {
+                StopSimDialog(state);
+            }
+            else if (key == Key.F9)
+            {
+                CreateEntityDialog(state);
+            }
+            else if (key == Key.F10)
+            {
+                RemoveEntityDialog(state);
+            }
             else if (key == Key.Delete)
             {
                 RemoveSelectedEntity(state);
@@ -141,7 +157,7 @@ internal static class Program
             X = 0,
             Y = 0,
             Width = 50,
-            Height = 11,
+            Height = 14,
             ColorScheme = frameScheme,
         };
 
@@ -150,24 +166,30 @@ internal static class Program
         controlFrame.Add(entityIdLabel, entityIdField);
 
         var patternLabel = new Label { Text = "Pattern:", X = 1, Y = 1 };
-        var patternField = new TextField { Text = "Linear", X = 12, Y = 1, Width = 15, ColorScheme = draculaScheme };
-        var patternHint = new Label { Text = "(Stationary, Linear, Circle)", X = 1, Y = 2, ColorScheme = draculaScheme };
-        controlFrame.Add(patternLabel, patternField, patternHint);
+        var patternGroup = new RadioGroup
+        {
+            X = 12,
+            Y = 1,
+            RadioLabels = new[] { "Linear", "Stationary", "Circle" },
+            SelectedItem = 0,
+            ColorScheme = draculaScheme,
+        };
+        controlFrame.Add(patternLabel, patternGroup);
 
-        var speedLabel = new Label { Text = "Speed:", X = 1, Y = 2 };
-        var speedField = new TextField { Text = "10", X = 12, Y = 2, Width = 10, ColorScheme = draculaScheme };
+        var speedLabel = new Label { Text = "Speed:", X = 1, Y = 4 };
+        var speedField = new TextField { Text = "10", X = 12, Y = 4, Width = 10, ColorScheme = draculaScheme };
         controlFrame.Add(speedLabel, speedField);
 
-        var rateLabel = new Label { Text = "Rate (Hz):", X = 1, Y = 3 };
-        var rateField = new TextField { Text = "5", X = 12, Y = 3, Width = 10, ColorScheme = draculaScheme };
+        var rateLabel = new Label { Text = "Rate (Hz):", X = 1, Y = 5 };
+        var rateField = new TextField { Text = "5", X = 12, Y = 5, Width = 10, ColorScheme = draculaScheme };
         controlFrame.Add(rateLabel, rateField);
 
         state.EntityIdField = entityIdField;
-        state.PatternField = patternField;
+        state.PatternGroup = patternGroup;
         state.SpeedField = speedField;
         state.RateField = rateField;
 
-        controlFrame.Add(new Label { Text = "[Enter] Add [Del] Remove [F2] Fire [F5] Start [F6] Stop", X = 1, Y = 7 });
+        controlFrame.Add(new Label { Text = "[Ent]Add [Del]Rem [F2]Fire [F5/6]Start/Stop", X = 1, Y = 7 });
 
         top.Add(controlFrame);
 
@@ -217,7 +239,7 @@ internal static class Program
 
         var statusBar = new Label
         {
-            Text = "Entities: 0 | PDUs: 0 | F5:Start F6:Stop [Ent]Add [Del]Rem F2:Fire F3:Mun F4:Desig",
+            Text = "Entities: 0 | PDUs: 0 | [F5]Start [F6]Stop [F7]StartSim [F8]StopSim",
             Y = Pos.AnchorEnd(1),
             Width = Dim.Fill(),
             Height = 1,
@@ -382,24 +404,198 @@ internal static class Program
         Application.Run(dialog);
     }
 
+    private static void StartSimDialog(ProducerState state)
+    {
+        var dialog = new Window
+        {
+            Title = "Start/Resume Simulation",
+            Width = 45,
+            Height = 8,
+            X = Pos.Center(),
+            Y = Pos.Center(),
+        };
+
+        var reqIdLabel = new Label { Text = "Request ID:", X = 1, Y = 0 };
+        var reqIdField = new TextField { Text = "1", X = 12, Y = 0, Width = 10 };
+
+        var sendBtn = new Button { Text = "SEND", X = 5, Y = 3, Width = 8 };
+        var cancelBtn = new Button { Text = "Cancel", X = 15, Y = 3, Width = 8 };
+
+        sendBtn.Accept += (s, e) =>
+        {
+            if (uint.TryParse(reqIdField.Text, out uint reqId))
+            {
+                var pdu = StartResumePdu.Create()
+                    .WithRequestId(reqId)
+                    .WithRealTime(0)
+                    .WithSimulationTime(0)
+                    .WithLevel(1)
+                    .WithSimulationFederation(1, 1)
+                    .Build();
+
+                pdu.Serialize(state.Buffer);
+                state.Sender.Send(state.Buffer.AsSpan(0, pdu.ComputedLength()));
+                state.TotalPdusSent++;
+                AddLog(state, $"[START] RequestId:{reqId}");
+                UpdateStatus(state);
+            }
+            Application.RequestStop();
+        };
+
+        cancelBtn.Accept += (s, e) => Application.RequestStop();
+        dialog.Add(reqIdLabel, reqIdField, sendBtn, cancelBtn);
+        Application.Run(dialog);
+    }
+
+    private static void StopSimDialog(ProducerState state)
+    {
+        var dialog = new Window
+        {
+            Title = "Stop/Freeze Simulation",
+            Width = 45,
+            Height = 8,
+            X = Pos.Center(),
+            Y = Pos.Center(),
+        };
+
+        var reqIdLabel = new Label { Text = "Request ID:", X = 1, Y = 0 };
+        var reqIdField = new TextField { Text = "1", X = 12, Y = 0, Width = 10 };
+
+        var sendBtn = new Button { Text = "SEND", X = 5, Y = 3, Width = 8 };
+        var cancelBtn = new Button { Text = "Cancel", X = 15, Y = 3, Width = 8 };
+
+        sendBtn.Accept += (s, e) =>
+        {
+            if (uint.TryParse(reqIdField.Text, out uint reqId))
+            {
+                var pdu = StopFreezePdu.Create()
+                    .WithRequestId(reqId)
+                    .WithRealTime(0)
+                    .WithSimulationTime(0)
+                    .WithReason(1)
+                    .WithSimulationFederation(1, 1)
+                    .Build();
+
+                pdu.Serialize(state.Buffer);
+                state.Sender.Send(state.Buffer.AsSpan(0, pdu.ComputedLength()));
+                state.TotalPdusSent++;
+                AddLog(state, $"[STOP] RequestId:{reqId}");
+                UpdateStatus(state);
+            }
+            Application.RequestStop();
+        };
+
+        cancelBtn.Accept += (s, e) => Application.RequestStop();
+        dialog.Add(reqIdLabel, reqIdField, sendBtn, cancelBtn);
+        Application.Run(dialog);
+    }
+
+    private static void CreateEntityDialog(ProducerState state)
+    {
+        var dialog = new Window
+        {
+            Title = "Create Entity",
+            Width = 45,
+            Height = 8,
+            X = Pos.Center(),
+            Y = Pos.Center(),
+        };
+
+        var reqIdLabel = new Label { Text = "Request ID:", X = 1, Y = 0 };
+        var reqIdField = new TextField { Text = "1", X = 12, Y = 0, Width = 10 };
+        var entityIdLabel = new Label { Text = "Entity ID:", X = 1, Y = 1 };
+        var entityIdField = new TextField { Text = "1", X = 12, Y = 1, Width = 10 };
+
+        var sendBtn = new Button { Text = "SEND", X = 5, Y = 3, Width = 8 };
+        var cancelBtn = new Button { Text = "Cancel", X = 15, Y = 3, Width = 8 };
+
+        sendBtn.Accept += (s, e) =>
+        {
+            if (uint.TryParse(reqIdField.Text, out uint reqId) &&
+                int.TryParse(entityIdField.Text, out int entityId))
+            {
+                var pdu = CreateEntityPdu.Create()
+                    .WithRequestId(reqId)
+                    .WithNumberOfParts(1)
+                    .WithEntityId(EntityId.Relative(entityId))
+                    .WithSimulationFederation(1, 1)
+                    .Build();
+
+                pdu.Serialize(state.Buffer);
+                state.Sender.Send(state.Buffer.AsSpan(0, pdu.ComputedLength()));
+                state.TotalPdusSent++;
+                AddLog(state, $"[CREATE] EntityId:{entityId}");
+                UpdateStatus(state);
+            }
+            Application.RequestStop();
+        };
+
+        cancelBtn.Accept += (s, e) => Application.RequestStop();
+        dialog.Add(reqIdLabel, reqIdField, entityIdLabel, entityIdField, sendBtn, cancelBtn);
+        Application.Run(dialog);
+    }
+
+    private static void RemoveEntityDialog(ProducerState state)
+    {
+        var dialog = new Window
+        {
+            Title = "Remove Entity",
+            Width = 45,
+            Height = 8,
+            X = Pos.Center(),
+            Y = Pos.Center(),
+        };
+
+        var reqIdLabel = new Label { Text = "Request ID:", X = 1, Y = 0 };
+        var reqIdField = new TextField { Text = "1", X = 12, Y = 0, Width = 10 };
+        var entityIdLabel = new Label { Text = "Entity ID:", X = 1, Y = 1 };
+        var entityIdField = new TextField { Text = "1", X = 12, Y = 1, Width = 10 };
+
+        var sendBtn = new Button { Text = "SEND", X = 5, Y = 3, Width = 8 };
+        var cancelBtn = new Button { Text = "Cancel", X = 15, Y = 3, Width = 8 };
+
+        sendBtn.Accept += (s, e) =>
+        {
+            if (uint.TryParse(reqIdField.Text, out uint reqId) &&
+                int.TryParse(entityIdField.Text, out int entityId))
+            {
+                var pdu = RemoveEntityPdu.Create()
+                    .WithRequestId(reqId)
+                    .WithEntityId(EntityId.Relative(entityId))
+                    .WithSimulationFederation(1, 1)
+                    .Build();
+
+                pdu.Serialize(state.Buffer);
+                state.Sender.Send(state.Buffer.AsSpan(0, pdu.ComputedLength()));
+                state.TotalPdusSent++;
+                AddLog(state, $"[REMOVE] EntityId:{entityId}");
+                UpdateStatus(state);
+            }
+            Application.RequestStop();
+        };
+
+        cancelBtn.Accept += (s, e) => Application.RequestStop();
+        dialog.Add(reqIdLabel, reqIdField, entityIdLabel, entityIdField, sendBtn, cancelBtn);
+        Application.Run(dialog);
+    }
+
     private static void AddEntityFromFields(ProducerState state)
     {
-        if (state.EntityIdField == null || state.PatternField == null || state.SpeedField == null) return;
+        if (state.EntityIdField == null || state.PatternGroup == null || state.SpeedField == null) return;
 
         if (int.TryParse(state.EntityIdField.Text, out int id) && id > 0)
         {
-            // Check for duplicate ID
             if (state.Simulators.Any(s => s.EntityId == id))
             {
                 AddLog(state, $"[ERROR] Entity ID {id} already exists!");
                 return;
             }
 
-            var patternStr = state.PatternField.Text ?? "Linear";
-            var pattern = patternStr.ToLower() switch
+            var pattern = state.PatternGroup.SelectedItem switch
             {
-                "stationary" => MovementPattern.Stationary,
-                "circle" => MovementPattern.Circle,
+                0 => MovementPattern.Linear,
+                1 => MovementPattern.Stationary,
+                2 => MovementPattern.Circle,
                 _ => MovementPattern.Linear
             };
             double.TryParse(state.SpeedField.Text, out double speed);
@@ -407,7 +603,6 @@ internal static class Program
             state.Simulators.Add(sim);
             UpdateEntityList(state);
             
-            // Auto-increment EntityId for next entity
             var nextId = state.Simulators.Select(s => s.EntityId).DefaultIfEmpty(0).Max() + 1;
             state.EntityIdField.Text = nextId.ToString();
             
@@ -440,7 +635,7 @@ internal static class Program
         if (state.EntityList == null) return;
 
         var items = state.Simulators
-            .Select(s => $"ID:{s.EntityId} | Pos:({s.Position.X:F1}, {s.Position.Y:F1})")
+            .Select(s => $"ID:{s.EntityId} {s.Pattern} @{s.Position.X:F0},{s.Position.Y:F0} spd:{s.Speed:F0}")
             .ToList();
 
         state.EntityList.SetSource(new ObservableCollection<string>(items));
@@ -450,7 +645,7 @@ internal static class Program
     private static void UpdateStatus(ProducerState state)
     {
         if (state.StatusBar == null) return;
-        state.StatusBar.Text = $"Entities: {state.Simulators.Count} | PDUs: {state.TotalPdusSent} | F5:Start F6:Stop [Ent]Add [Del]Rem F2:Fire F3:Mun F4:Desig";
+            state.StatusBar.Text = $"Entities: {state.Simulators.Count} | PDUs: {state.TotalPdusSent} | [F5]Start [F6]Stop [F7]StartSim [F8]StopSim";
     }
 
     private static void AddLog(ProducerState state, string message)
@@ -517,7 +712,7 @@ internal class ProducerState
     public long TotalPdusSent { get; set; }
 
     public TextField? EntityIdField { get; set; }
-    public TextField? PatternField { get; set; }
+    public RadioGroup? PatternGroup { get; set; }
     public TextField? SpeedField { get; set; }
     public TextField? RateField { get; set; }
 

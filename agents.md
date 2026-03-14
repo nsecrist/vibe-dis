@@ -1,5 +1,22 @@
 # SisoDis.NET – Agent Guidance
 
+## Branching Strategy
+
+**All new features MUST be developed on feature branches, never on master.**
+
+```bash
+# Create feature branch
+git checkout -b feature/your-feature-name
+
+# Work on feature, commit often
+git commit -m "Add feature X"
+
+# When complete, squash merge to master
+git checkout master
+git merge --squash feature/your-feature-name
+git commit -m "Merge branch 'feature/your-feature-name' (squash)"
+```
+
 ## Quick Reference
 
 ```bash

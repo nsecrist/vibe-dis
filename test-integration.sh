@@ -46,7 +46,23 @@ echo "      Done"
 echo ""
 
 # Create new tmux session
-echo "[3/3] Starting Producer and Receiver in tmux..."
+echo "Starting tmux session..."
+tmux new-session -d -s siso
+
+# Wait for tmux to be ready
+sleep 0.5
+
+# Start Producer in first pane
+tmux send-keys -t siso.0 "cd $SCRIPT_DIR && dotnet run --project SisoDis.Producer" C-m
+
+# Split horizontally and start Receiver in second pane
+tmux split-window -h -t siso.0
+sleep 0.3
+tmux send-keys -t siso.1 "cd $SCRIPT_DIR && dotnet run --project SisoDis.Receiver" C-m
+
+# Select first pane (Producer)
+tmux select-pane -t siso.0
+
 echo ""
 echo "Controls:"
 echo "  Ctrl+B then 1 : Switch to Producer pane"
@@ -54,16 +70,6 @@ echo "  Ctrl+B then 2 : Switch to Receiver pane"
 echo "  Ctrl+B then d : Detach (leave running)"
 echo "  tmux kill-session -t siso : Stop all"
 echo ""
-
-# Start tmux session with Producer in first pane, Receiver in second pane
-tmux new-session -d -s siso -n Producer "cd $SCRIPT_DIR && dotnet run --project SisoDis.Producer"
-
-tmux split-window -h -t siso
-tmux select-pane -t siso:Producer
-tmux send-keys -t siso:Producer "dotnet run --project SisoDis.Receiver" C-m
-
-# Select first pane
-tmux select-pane -t siso:Producer
 
 # Attach to the session
 tmux attach-session -t siso

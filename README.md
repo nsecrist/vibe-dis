@@ -114,6 +114,14 @@ foreach (var (code, type) in all)
 | Collision-Elastic | 5 | `CollisionElasticPdu` | §5.3.5 |
 | Entity State Update | 6 | `EntityStateUpdatePdu` | §5.3.6 |
 | Attribute | 7 | `AttributePdu` | §5.3.7 |
+| Create Entity | 23 | `CreateEntityPdu` | §5.3.6.1 |
+| Remove Entity | 24 | `RemoveEntityPdu` | §5.3.6.2 |
+| Start/Resume | 25 | `StartResumePdu` | §5.3.6.3 |
+| Stop/Freeze | 26 | `StopFreezePdu` | §5.3.6.4 |
+| Acknowledge | 27 | `AcknowledgePdu` | §5.3.6.5 |
+| Action Request | 28 | `ActionRequestPdu` | §5.3.6.6 |
+| Action Response | 29 | `ActionResponsePdu` | §5.3.6.7 |
+| Data Query | 30 | `DataQueryPdu` | §5.3.6.8 |
 | Munition | 20 | `MunitionPdu` | §5.3.10 |
 | Designator | 21 | `DesignatorPdu` | §5.3.11 |
 | Electromagnetic Emission | 22 | `ElectromagneticEmissionPdu` | §5.3.12 |
@@ -354,6 +362,81 @@ var rx = ElectromagneticEmissionPdu.Deserialize(buf);
 Console.WriteLine($"Emitter: {rx.EntityId.Value}");
 Console.WriteLine($"Emitter number: {rx.EmitterNumber}");
 Console.WriteLine($"Systems: {rx.NumberOfSystems}");
+```
+
+### Simulation Management PDUs
+
+The Simulation Management family (types 23-30) controls exercise state and entity lifecycle.
+
+```csharp
+// Create Entity - Request to create an entity
+var createPdu = CreateEntityPdu.Create()
+    .WithRequestId(1)
+    .WithNumberOfParts(1)
+    .WithEntityId(EntityId.Relative(100))
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Remove Entity - Request to remove an entity
+var removePdu = RemoveEntityPdu.Create()
+    .WithRequestId(2)
+    .WithEntityId(EntityId.Relative(100))
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Start/Resume - Begin or resume simulation
+var startPdu = StartResumePdu.Create()
+    .WithRequestId(3)
+    .WithRealTime(1000)
+    .WithSimulationTime(500)
+    .WithLevel(1)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Stop/Freeze - Stop or freeze simulation
+var stopPdu = StopFreezePdu.Create()
+    .WithRequestId(4)
+    .WithRealTime(2000)
+    .WithSimulationTime(1000)
+    .WithReason(1)  // 1 = stop, 2 = freeze
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Acknowledge - Respond to simulation management requests
+var ackPdu = AcknowledgePdu.Create()
+    .WithRequestId(1)
+    .WithResponseFlag(1)  // 1 = received, 2 = understand
+    .WithAcknowledgeFlag(1)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Action Request - Request specific action
+var actionReqPdu = ActionRequestPdu.Create()
+    .WithRequestId(5)
+    .WithActionId(100)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Action Response - Response to action request
+var actionRespPdu = ActionResponsePdu.Create()
+    .WithRequestId(5)
+    .WithActionId(100)
+    .WithResponseFlag(1)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Data Query - Request data from another application
+var dataQueryPdu = DataQueryPdu.Create()
+    .WithRequestId(6)
+    .WithTimeInterval(100)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
 ```
 
 ## Error Handling
