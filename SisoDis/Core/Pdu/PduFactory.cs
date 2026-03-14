@@ -49,6 +49,14 @@ public sealed class PduFactory
     /// <summary>Initializes the factory with all standard DIS PDU type registrations per IEEE 1278.1-2012.</summary>
     static PduFactory()
     {
+        // Register Fire PDU (Type code = 2) - IEEE §5.3.3 Table 5-4
+        if (!IsRegistered(FirePdu.PdTypeValue))
+            RegisterPduType(FirePdu.PdTypeValue, typeof(FirePdu));
+
+        // Register Detonation PDU (Type code = 3) - IEEE §5.3.4 Table 5-4
+        if (!IsRegistered(DetonationPdu.PdTypeValue))
+            RegisterPduType(DetonationPdu.PdTypeValue, typeof(DetonationPdu));
+
         // Register EntityStatePDU (Type code = 1) - IEEE §5.3.3.1 Table 5-4
         if (!IsRegistered(EntityStatePdu.PdTypeValue))
             RegisterPduType(EntityStatePdu.PdTypeValue, typeof(EntityStatePdu));

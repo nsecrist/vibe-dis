@@ -1,5 +1,5 @@
 #!/bin/bash
-# Integration test: runs Producer and Receiver together to verify DIS PDU streaming
+# Integration test: runs Producer and Receiver in tmux for live viewing
 
 set -e
 
@@ -7,52 +7,70 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 echo "=============================================="
-echo "SisoDis.NET Integration Test"
+echo "SisoDis.NET Integration Test (tmux)"
 echo "=============================================="
 echo ""
 
+# Install tmux if not present
+if ! command -v tmux &> /dev/null; then
+    echo "[Installing tmux...]"
+    if command -v apt-get &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq tmux
+    elif command -v brew &> /dev/null; then
+        brew install tmux
+    elif command -v yum &> /dev/null; then
+        sudo yum install -y tmux
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y tmux
+    else
+        echo "ERROR: Cannot install tmux - please install it manually"
+        exit 1
+    fi
+    echo "      tmux installed"
+fi
+echo ""
+
 # Check if solution builds
-echo "[1/4] Building solution..."
+echo "[1/3] Building solution..."
 dotnet build --verbosity quiet
 echo "      Build OK"
 echo ""
 
-# Kill any existing processes on our ports
-echo "[2/4] Cleaning up stale processes..."
+# Kill any existing processes
+echo "[2/3] Cleaning up stale processes..."
 pkill -f "SisoDis.Producer" 2>/dev/null || true
 pkill -f "SisoDis.Receiver" 2>/dev/null || true
+tmux kill-session -t siso 2>/dev/null || true
 sleep 1
 echo "      Done"
 echo ""
 
-# Start Producer in background
-echo "[3/4] Starting Producer..."
-dotnet run --project SisoDis.Producer -- \
-    --rate 2 \
-    --entities 3 \
-    --pattern Linear \
-    --duration 60 \
-    > /tmp/sisodis-producer.log 2>&1 &
-PRODUCER_PID=$!
-echo "      Producer started (PID: $PRODUCER_PID)"
+# Create new tmux session
+echo "[3/3] Starting Producer and Receiver in tmux..."
+echo ""
+echo "Controls:"
+echo "  Ctrl+B then 1 : Switch to Producer pane"
+echo "  Ctrl+B then 2 : Switch to Receiver pane"
+echo "  Ctrl+B then d : Detach (leave running)"
+echo "  tmux kill-session -t siso : Stop all"
 echo ""
 
-# Give producer time to start
-sleep 2
+# Start tmux session with Producer in first pane, Receiver in second pane
+tmux new-session -d -s siso -n Producer "cd $SCRIPT_DIR && dotnet run --project SisoDis.Producer"
 
-# Start Receiver (this will run in foreground)
-echo "[4/4] Starting Receiver..."
-echo "      Press Ctrl+Q to quit"
-echo ""
-echo "=============================================="
-echo ""
+tmux split-window -h -t siso
+tmux select-pane -t siso:Producer
+tmux send-keys -t siso:Producer "dotnet run --project SisoDis.Receiver" C-m
 
-dotnet run --project SisoDis.Receiver
+# Select first pane
+tmux select-pane -t siso:Producer
 
-# Cleanup
+# Attach to the session
+tmux attach-session -t siso
+
+# When user detaches, cleanup
 echo ""
-echo "[Cleanup] Stopping Producer..."
-kill $PRODUCER_PID 2>/dev/null || true
-wait $PRODUCER_PID 2>/dev/null || true
+echo "[Cleanup] Stopping tmux session..."
+tmux kill-session -t siso 2>/dev/null || true
 
 echo "Done."

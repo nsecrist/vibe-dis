@@ -129,6 +129,8 @@ internal sealed class MulticastReceiver : IDisposable
         {
             return pdu.PdType switch
             {
+                2 => FirePdu.Deserialize(data, 0),
+                3 => DetonationPdu.Deserialize(data, 0),
                 1 => EntityStatePdu.Deserialize(data, 0),
                 4 => CollisionPdu.Deserialize(data, 0),
                 5 => CollisionElasticPdu.Deserialize(data, 0),
