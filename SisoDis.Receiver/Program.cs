@@ -7,6 +7,29 @@ namespace SisoDis.Receiver;
 
 internal static class Program
 {
+    private static class Dracula
+    {
+        public static readonly Color Background = new Color(40, 42, 54);
+        public static readonly Color Foreground = new Color(248, 248, 242);
+        public static readonly Color Comment = new Color(98, 114, 164);
+        public static readonly Color Cyan = new Color(139, 233, 253);
+        public static readonly Color Green = new Color(80, 250, 123);
+        public static readonly Color Orange = new Color(255, 184, 108);
+        public static readonly Color Pink = new Color(255, 121, 198);
+        public static readonly Color Purple = new Color(189, 147, 249);
+        public static readonly Color Red = new Color(255, 85, 85);
+        public static readonly Color Yellow = new Color(241, 250, 140);
+        public static readonly Color Selection = new Color(68, 71, 90);
+    }
+
+    private static ColorScheme CreateDraculaScheme() => new()
+    {
+        Normal = new Terminal.Gui.Attribute(Dracula.Foreground, Dracula.Background),
+        Focus = new Terminal.Gui.Attribute(Dracula.Background, Dracula.Purple),
+        HotNormal = new Terminal.Gui.Attribute(Dracula.Cyan, Dracula.Background),
+        HotFocus = new Terminal.Gui.Attribute(Dracula.Background, Dracula.Cyan),
+    };
+
     public static async Task<int> Main(string[] args)
     {
         var addressOption = new Option<string>("--address", "-a")
@@ -118,26 +141,34 @@ internal static class Program
 
     private static Window BuildUi(ReceiverState state)
     {
-        // Main window
+        var draculaScheme = CreateDraculaScheme();
+        var frameScheme = new ColorScheme
+        {
+            Normal = new Terminal.Gui.Attribute(Dracula.Foreground, Dracula.Background),
+            Focus = new Terminal.Gui.Attribute(Dracula.Background, Dracula.Purple),
+            HotNormal = new Terminal.Gui.Attribute(Dracula.Purple, Dracula.Background),
+            HotFocus = new Terminal.Gui.Attribute(Dracula.Background, Dracula.Purple),
+        };
+
         var top = new Window
         {
             Title = $"SisoDis.NET Receiver — {state.MulticastAddress}:{state.Port}",
             Width = Dim.Fill(),
             Height = Dim.Fill(),
+            ColorScheme = draculaScheme,
         };
 
-        // Status bar at bottom
         var statusBar = new Label
         {
             Text = $"Entities: 0 | PDUs: 0 | Errors: 0 | Ctrl+Q to quit",
             Y = Pos.AnchorEnd(1),
             Width = Dim.Fill(),
             Height = 1,
+            ColorScheme = draculaScheme,
         };
         top.Add(statusBar);
         state.StatusLabel = statusBar;
 
-        // Entity table (top area)
         var entityFrame = new FrameView
         {
             Title = "Entities",
@@ -145,6 +176,7 @@ internal static class Program
             Y = 0,
             Width = Dim.Fill(),
             Height = Dim.Fill(4),
+            ColorScheme = frameScheme,
         };
 
         var entityTable = new TableView
@@ -153,9 +185,9 @@ internal static class Program
             Y = 0,
             Width = Dim.Fill(),
             Height = Dim.Fill(),
+            ColorScheme = draculaScheme,
         };
         
-        // Configure columns using Terminal.Gui v2 TableViewStyle
         var tableSource = new EntityTableSource();
         entityTable.Table = tableSource;
 
@@ -164,7 +196,6 @@ internal static class Program
         state.EntityTable = entityTable;
         state.TableSource = tableSource;
 
-        // PDU log (bottom area)
         var logFrame = new FrameView
         {
             Title = "PDU Log",
@@ -172,6 +203,7 @@ internal static class Program
             Y = Pos.AnchorEnd(4),
             Width = Dim.Fill(),
             Height = 3,
+            ColorScheme = frameScheme,
         };
 
         var logList = new ListView
@@ -180,6 +212,7 @@ internal static class Program
             Y = 0,
             Width = Dim.Fill(),
             Height = Dim.Fill(),
+            ColorScheme = draculaScheme,
         };
         logFrame.Add(logList);
         top.Add(logFrame);
