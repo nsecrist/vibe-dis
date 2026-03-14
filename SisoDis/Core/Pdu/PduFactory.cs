@@ -45,4 +45,28 @@ public sealed class PduFactory
     /// <summary>Returns all registered PDU types as a dictionary.</summary>
     public static IReadOnlyDictionary<ushort, Type> GetAllRegisteredPduTypes() 
         => new Dictionary<ushort, Type>(_pduTypes);
+
+    /// <summary>Initializes the factory with all standard DIS PDU type registrations per IEEE 1278.1-2012.</summary>
+    static PduFactory()
+    {
+        // Register EntityStatePDU (Type code = 1) - IEEE §5.3.3.1 Table 5-4
+        if (!IsRegistered(EntityStatePdu.PdTypeValue))
+            RegisterPduType(EntityStatePdu.PdTypeValue, typeof(EntityStatePdu));
+
+        // Register Collision PDU (Type code = 4) - IEEE §5.3.4 Table 5-4
+        if (!IsRegistered(CollisionPdu.PdTypeValue))
+            RegisterPduType(CollisionPdu.PdTypeValue, typeof(CollisionPdu));
+
+        // Register Collision-Elastic PDU (Type code = 5) - IEEE §5.3.5 Table 5-4
+        if (!IsRegistered(CollisionElasticPdu.PdTypeValue))
+            RegisterPduType(CollisionElasticPdu.PdTypeValue, typeof(CollisionElasticPdu));
+
+        // Register Entity State Update PDU (Type code = 6) - IEEE §5.3.6 Table 5-4
+        if (!IsRegistered(EntityStateUpdatePdu.PdTypeValue))
+            RegisterPduType(EntityStateUpdatePdu.PdTypeValue, typeof(EntityStateUpdatePdu));
+
+        // Register Attribute PDU (Type code = 7) - IEEE §5.3.7 Table 5-4
+        if (!IsRegistered(AttributePdu.PdTypeValue))
+            RegisterPduType(AttributePdu.PdTypeValue, typeof(AttributePdu));
+    }
 }

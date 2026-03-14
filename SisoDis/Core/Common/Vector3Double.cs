@@ -6,23 +6,11 @@ namespace SisoDis.Core.Common;
 /// Represents 3D vector coordinates with optional W component for normalized forms (IEEE 1278.1-2012 §5.7.4).
 /// </summary>
 /// <remarks>Per IEEE 1278.1-2012 §5.7.4: X and Y are doubles representing position coordinates, W is optional float for normalized representation.</remarks>
-public record struct Vector3Double
+public record struct Vector3Double(double X, double Y, double Z)
 {
-    /// <summary>
-    /// The X coordinate (per IEEE 1278.1-2012 §5.7.4).
-    /// </summary>
-    [Obsolete("Use X property directly from record")] 
-    public double DoubleX { get; init; }
+    /// <summary>Default zero vector.</summary>
+    public static Vector3Double Zero => new(0, 0, 0);
 
-    /// <summary>
-    /// The Y coordinate (per IEEE 1278.1-2012 §5.7.4).
-    /// </summary>
-    [Obsolete("Use Y property directly from record")] 
-    public double DoubleY { get; init; }
-
-    /// <summary>
-    /// The Z coordinate (per IEEE 1278.1-2012 §5.7.4).
-    /// </summary>
-    [Obsolete("Use Z property directly from record")] 
-    public double DoubleZ { get; init; }
+    /// <summary>Creates a vector from individual components.</summary>
+    public static Vector3Double FromValues(double x, double y, double z) => new(x, y, z);
 }

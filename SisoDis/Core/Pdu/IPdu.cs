@@ -17,5 +17,8 @@ public interface IPdu
     /// <summary>The PDU type code (disambiguates PDU family per §5.3).</summary>
     ushort PdType { get; }
 
+    /// <summary>Gets the total length of this PDU in bytes including header.</summary>
+    int ComputedLength();
+
     void SerializeBody(Span<byte> buffer, int offset);
 }
