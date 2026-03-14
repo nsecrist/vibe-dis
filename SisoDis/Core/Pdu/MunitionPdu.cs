@@ -6,9 +6,10 @@ using SisoDis.Core.Serialization;
 namespace SisoDis.Core.Pdu;
 
 /// <summary>
-/// Represents DIS Fire PDU (IEEE 1278.1-2012 §5.3.3).
+/// Represents DIS Munition PDU (IEEE 1278.1-2012 §5.3.10).
+/// Used to communicate the firing of a weapon.
 /// </summary>
-public record struct FirePdu(
+public record struct MunitionPdu(
     EntityId EntityId,
     EntityId TargetEntityId,
     EntityId MunitionId,
@@ -20,8 +21,8 @@ public record struct FirePdu(
     byte FederationReference
 ) : IPdu
 {
-    /// <summary>PDU Type code for Fire PDU per IEEE 1278.1-2012 Table 5-4.</summary>
-    public const ushort PdTypeValue = 2;
+    /// <summary>PDU Type code for Munition PDU per IEEE 1278.1-2012 Table 5-4.</summary>
+    public const ushort PdTypeValue = 20;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;
@@ -62,7 +63,7 @@ public record struct FirePdu(
         buffer[offset] = FederationReference;
     }
 
-    public static FirePdu Deserialize(ReadOnlySpan<byte> buffer, int offset = 0)
+    public static MunitionPdu Deserialize(ReadOnlySpan<byte> buffer, int offset = 0)
     {
         if (buffer.Length < offset + PduHeader.HeaderLength)
             throw new ArgumentException("Buffer too small for header", nameof(buffer));
@@ -120,7 +121,7 @@ public record struct FirePdu(
 
         byte federationRef = buffer[pos];
 
-        return new FirePdu(
+        return new MunitionPdu(
             entityId,
             targetId,
             munitionId,
@@ -162,7 +163,7 @@ public record struct FirePdu(
         public Builder WithVelocity(double x, double y, double z) { _velocity = new Vector3Double(x, y, z); return this; }
         public Builder WithSimulationFederation(byte sim, byte fed) { _simulationRef = sim; _federationRef = fed; return this; }
 
-        public FirePdu Build() => new(
+        public MunitionPdu Build() => new(
             _entityId,
             _targetEntityId,
             _munitionId,

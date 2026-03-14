@@ -108,10 +108,15 @@ foreach (var (code, type) in all)
 | PDU | Type Code | Class | IEEE Section |
 |-----|-----------|-------|-------------|
 | Entity State | 1 | `EntityStatePdu` | §5.3.3.1 |
+| Fire | 2 | `FirePdu` | §5.3.3 |
+| Detonation | 3 | `DetonationPdu` | §5.3.4 |
 | Collision | 4 | `CollisionPdu` | §5.3.4 |
 | Collision-Elastic | 5 | `CollisionElasticPdu` | §5.3.5 |
 | Entity State Update | 6 | `EntityStateUpdatePdu` | §5.3.6 |
 | Attribute | 7 | `AttributePdu` | §5.3.7 |
+| Munition | 20 | `MunitionPdu` | §5.3.10 |
+| Designator | 21 | `DesignatorPdu` | §5.3.11 |
+| Electromagnetic Emission | 22 | `ElectromagneticEmissionPdu` | §5.3.12 |
 
 ## PDU Examples
 
@@ -227,6 +232,128 @@ var rx = AttributePdu.Deserialize(buf);
 
 foreach (var attr in rx.Attributes)
     Console.WriteLine($"Attribute {attr.AttributeNumber}: {attr.Data.Length} bytes");
+```
+
+### Fire PDU
+
+Reports the firing of a weapon by an entity.
+
+```csharp
+var pdu = FirePdu.Create()
+    .WithEntityId(EntityId.Relative(42))
+    .WithTargetEntityId(EntityId.Relative(100))
+    .WithMunitionId(EntityId.Relative(200))
+    .WithEventId(EntityId.Relative(1))
+    .WithFireMissionIndex(5)
+    .WithLocation(10.5, 20.7, 30.9)
+    .WithVelocity(1.0, -2.0, 3.0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+byte[] buf = new byte[pdu.ComputedLength()];
+pdu.Serialize(buf);
+var rx = FirePdu.Deserialize(buf);
+
+Console.WriteLine($"Firing entity: {rx.EntityId.Value}");
+Console.WriteLine($"Target: {rx.TargetEntityId.Value}");
+Console.WriteLine($"Velocity: ({rx.Velocity.X}, {rx.Velocity.Y}, {rx.Velocity.Z})");
+```
+
+### Detonation PDU
+
+Reports the detonation of a munition.
+
+```csharp
+var pdu = DetonationPdu.Create()
+    .WithEntityId(EntityId.Relative(42))
+    .WithTargetEntityId(EntityId.Relative(100))
+    .WithMunitionId(EntityId.Relative(200))
+    .WithEventId(EntityId.Relative(1))
+    .WithVelocity(1.0, -2.0, 3.0)
+    .WithLocation(10.5, 20.7, 30.9)
+    .WithResult(DetonationResult.Impact)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+byte[] buf = new byte[pdu.ComputedLength()];
+pdu.Serialize(buf);
+var rx = DetonationPdu.Deserialize(buf);
+
+Console.WriteLine($"Detonation by: {rx.EntityId.Value}");
+Console.WriteLine($"Result: {rx.Result}");
+Console.WriteLine($"Location: ({rx.Location.X}, {rx.Location.Y}, {rx.Location.Z})");
+```
+
+### Munition PDU
+
+Communicates the firing of a weapon (similar to Fire PDU but used in different contexts per IEEE 1278.1-2012 §5.3.10).
+
+```csharp
+var pdu = MunitionPdu.Create()
+    .WithEntityId(EntityId.Relative(42))
+    .WithTargetEntityId(EntityId.Relative(100))
+    .WithMunitionId(EntityId.Relative(200))
+    .WithEventId(EntityId.Relative(1))
+    .WithFireMissionIndex(10)
+    .WithLocation(5.0, 10.0, 15.0)
+    .WithVelocity(0.5, 1.0, 0.0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+byte[] buf = new byte[pdu.ComputedLength()];
+pdu.Serialize(buf);
+var rx = MunitionPdu.Deserialize(buf);
+
+Console.WriteLine($"Munition fired by: {rx.EntityId.Value}");
+Console.WriteLine($"Fire mission: {rx.FireMissionIndex}");
+```
+
+### Designator PDU
+
+Reports the designation of an entity or location by a designator (e.g., laser designator).
+
+```csharp
+var pdu = DesignatorPdu.Create()
+    .WithEntityId(EntityId.Relative(42))
+    .WithTargetEntityId(EntityId.Relative(100))
+    .WithDesignatorLocation(1.0, 2.0, 3.0)
+    .WithDesignatorOrientation(0.1, 0.2, 0.3)
+    .WithEntityLocation(10.5, 20.7, 30.9)
+    .WithDesignatorCode(5)
+    .WithDesignatorOutput(200)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+byte[] buf = new byte[pdu.ComputedLength()];
+pdu.Serialize(buf);
+var rx = DesignatorPdu.Deserialize(buf);
+
+Console.WriteLine($"Designator: {rx.EntityId.Value}");
+Console.WriteLine($"Target: {rx.TargetEntityId.Value}");
+Console.WriteLine($"Designator code: {rx.DesignatorCode}");
+```
+
+### Electromagnetic Emission PDU
+
+Reports electromagnetic emission data from an entity (e.g., radar, jammer).
+
+```csharp
+var pdu = ElectromagneticEmissionPdu.Create()
+    .WithEntityId(EntityId.Relative(42))
+    .WithEmitterNumber(5)
+    .WithEmitterLocation(100)
+    .WithSimulationFederation(1, 1)
+    .WithNumberOfSystems(2)
+    .WithNumberOfEmissionSystems(3)
+    .Build();
+
+byte[] buf = new byte[pdu.ComputedLength()];
+pdu.Serialize(buf);
+var rx = ElectromagneticEmissionPdu.Deserialize(buf);
+
+Console.WriteLine($"Emitter: {rx.EntityId.Value}");
+Console.WriteLine($"Emitter number: {rx.EmitterNumber}");
+Console.WriteLine($"Systems: {rx.NumberOfSystems}");
 ```
 
 ## Error Handling

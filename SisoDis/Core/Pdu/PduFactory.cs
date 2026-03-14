@@ -76,5 +76,17 @@ public sealed class PduFactory
         // Register Attribute PDU (Type code = 7) - IEEE §5.3.7 Table 5-4
         if (!IsRegistered(AttributePdu.PdTypeValue))
             RegisterPduType(AttributePdu.PdTypeValue, typeof(AttributePdu));
+
+        // Register Munition PDU (Type code = 20) - IEEE §5.3.10 Table 5-4
+        if (!IsRegistered(MunitionPdu.PdTypeValue))
+            RegisterPduType(MunitionPdu.PdTypeValue, typeof(MunitionPdu));
+
+        // Register Designator PDU (Type code = 21) - IEEE §5.3.11 Table 5-4
+        if (!IsRegistered(DesignatorPdu.PdTypeValue))
+            RegisterPduType(DesignatorPdu.PdTypeValue, typeof(DesignatorPdu));
+
+        // Register Electromagnetic Emission PDU (Type code = 22) - IEEE §5.3.12 Table 5-4
+        if (!IsRegistered(ElectromagneticEmissionPdu.PdTypeValue))
+            RegisterPduType(ElectromagneticEmissionPdu.PdTypeValue, typeof(ElectromagneticEmissionPdu));
     }
 }

@@ -6,28 +6,29 @@ using SisoDis.Core.Serialization;
 namespace SisoDis.Core.Pdu;
 
 /// <summary>
-/// Represents DIS Fire PDU (IEEE 1278.1-2012 §5.3.3).
+/// Represents DIS Designator PDU (IEEE 1278.1-2012 §5.3.11).
+/// Used to communicate the designation of an entity or location by a designator.
 /// </summary>
-public record struct FirePdu(
+public record struct DesignatorPdu(
     EntityId EntityId,
     EntityId TargetEntityId,
-    EntityId MunitionId,
-    EntityId EventId,
-    uint FireMissionIndex,
-    Vector3Double Location,
-    Vector3Double Velocity,
+    Vector3Double DesignatorLocation,
+    Vector3Double DesignatorOrientation,
+    Vector3Double EntityLocation,
+    byte DesignatorCode,
+    byte DesignatorOutput,
     byte SimulationReference,
     byte FederationReference
 ) : IPdu
 {
-    /// <summary>PDU Type code for Fire PDU per IEEE 1278.1-2012 Table 5-4.</summary>
-    public const ushort PdTypeValue = 2;
+    /// <summary>PDU Type code for Designator PDU per IEEE 1278.1-2012 Table 5-4.</summary>
+    public const ushort PdTypeValue = 21;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;
     public ushort PdType => PdTypeValue;
 
-    public int ComputedLength() => PduHeader.HeaderLength + 62;
+    public int ComputedLength() => PduHeader.HeaderLength + 80;
 
     public void SerializeBody(Span<byte> buffer, int offset)
     {
@@ -37,24 +38,26 @@ public record struct FirePdu(
         BinaryPrimitives.WriteUInt16BigEndian(buffer.Slice(offset, 2), (ushort)TargetEntityId.Value);
         offset += 2;
 
-        BinaryPrimitives.WriteUInt16BigEndian(buffer.Slice(offset, 2), (ushort)MunitionId.Value);
-        offset += 2;
-
-        BinaryPrimitives.WriteUInt16BigEndian(buffer.Slice(offset, 2), (ushort)EventId.Value);
-        offset += 2;
-
-        BinaryPrimitives.WriteUInt32BigEndian(buffer.Slice(offset, 4), FireMissionIndex);
-        offset += 4;
-
-        SerializeDouble(buffer.Slice(offset), Location.X);
-        SerializeDouble(buffer.Slice(offset + 8), Location.Y);
-        SerializeDouble(buffer.Slice(offset + 16), Location.Z);
+        SerializeDouble(buffer.Slice(offset), DesignatorLocation.X);
+        SerializeDouble(buffer.Slice(offset + 8), DesignatorLocation.Y);
+        SerializeDouble(buffer.Slice(offset + 16), DesignatorLocation.Z);
         offset += 24;
 
-        SerializeDouble(buffer.Slice(offset), Velocity.X);
-        SerializeDouble(buffer.Slice(offset + 8), Velocity.Y);
-        SerializeDouble(buffer.Slice(offset + 16), Velocity.Z);
+        SerializeDouble(buffer.Slice(offset), DesignatorOrientation.X);
+        SerializeDouble(buffer.Slice(offset + 8), DesignatorOrientation.Y);
+        SerializeDouble(buffer.Slice(offset + 16), DesignatorOrientation.Z);
         offset += 24;
+
+        SerializeDouble(buffer.Slice(offset), EntityLocation.X);
+        SerializeDouble(buffer.Slice(offset + 8), EntityLocation.Y);
+        SerializeDouble(buffer.Slice(offset + 16), EntityLocation.Z);
+        offset += 24;
+
+        buffer[offset] = DesignatorCode;
+        offset++;
+
+        buffer[offset] = DesignatorOutput;
+        offset++;
 
         buffer[offset] = SimulationReference;
         offset++;
@@ -62,7 +65,7 @@ public record struct FirePdu(
         buffer[offset] = FederationReference;
     }
 
-    public static FirePdu Deserialize(ReadOnlySpan<byte> buffer, int offset = 0)
+    public static DesignatorPdu Deserialize(ReadOnlySpan<byte> buffer, int offset = 0)
     {
         if (buffer.Length < offset + PduHeader.HeaderLength)
             throw new ArgumentException("Buffer too small for header", nameof(buffer));
@@ -90,44 +93,46 @@ public record struct FirePdu(
         EntityId targetId = new EntityId(targetIdValue);
         pos += 2;
 
-        ushort munitionIdValue = BinaryPrimitives.ReadUInt16BigEndian(buffer.Slice(pos, 2));
-        EntityId munitionId = new EntityId(munitionIdValue);
-        pos += 2;
-
-        ushort eventIdValue = BinaryPrimitives.ReadUInt16BigEndian(buffer.Slice(pos, 2));
-        EntityId eventId = new EntityId(eventIdValue);
-        pos += 2;
-
-        uint fireMissionIndex = BinaryPrimitives.ReadUInt32BigEndian(buffer.Slice(pos, 4));
-        pos += 4;
-
-        Vector3Double location = new Vector3Double(
+        Vector3Double designatorLocation = new Vector3Double(
             ReadDouble(buffer.Slice(pos)),
             ReadDouble(buffer.Slice(pos + 8)),
             ReadDouble(buffer.Slice(pos + 16))
         );
         pos += 24;
 
-        Vector3Double velocity = new Vector3Double(
+        Vector3Double designatorOrientation = new Vector3Double(
             ReadDouble(buffer.Slice(pos)),
             ReadDouble(buffer.Slice(pos + 8)),
             ReadDouble(buffer.Slice(pos + 16))
         );
         pos += 24;
+
+        Vector3Double entityLocation = new Vector3Double(
+            ReadDouble(buffer.Slice(pos)),
+            ReadDouble(buffer.Slice(pos + 8)),
+            ReadDouble(buffer.Slice(pos + 16))
+        );
+        pos += 24;
+
+        byte designatorCode = buffer[pos];
+        pos++;
+
+        byte designatorOutput = buffer[pos];
+        pos++;
 
         byte simulationRef = buffer[pos];
         pos++;
 
         byte federationRef = buffer[pos];
 
-        return new FirePdu(
+        return new DesignatorPdu(
             entityId,
             targetId,
-            munitionId,
-            eventId,
-            fireMissionIndex,
-            location,
-            velocity,
+            designatorLocation,
+            designatorOrientation,
+            entityLocation,
+            designatorCode,
+            designatorOutput,
             simulationRef,
             federationRef
         );
@@ -145,31 +150,31 @@ public record struct FirePdu(
     {
         private EntityId _entityId = new(0);
         private EntityId _targetEntityId = new(0);
-        private EntityId _munitionId = new(0);
-        private EntityId _eventId = new(0);
-        private uint _fireMissionIndex = 0;
-        private Vector3Double _location = new();
-        private Vector3Double _velocity = new();
+        private Vector3Double _designatorLocation = new();
+        private Vector3Double _designatorOrientation = new();
+        private Vector3Double _entityLocation = new();
+        private byte _designatorCode = 0;
+        private byte _designatorOutput = 0;
         private byte _simulationRef = 0;
         private byte _federationRef = 0;
 
         public Builder WithEntityId(EntityId id) { _entityId = id; return this; }
         public Builder WithTargetEntityId(EntityId id) { _targetEntityId = id; return this; }
-        public Builder WithMunitionId(EntityId id) { _munitionId = id; return this; }
-        public Builder WithEventId(EntityId id) { _eventId = id; return this; }
-        public Builder WithFireMissionIndex(uint index) { _fireMissionIndex = index; return this; }
-        public Builder WithLocation(double x, double y, double z) { _location = new Vector3Double(x, y, z); return this; }
-        public Builder WithVelocity(double x, double y, double z) { _velocity = new Vector3Double(x, y, z); return this; }
+        public Builder WithDesignatorLocation(double x, double y, double z) { _designatorLocation = new Vector3Double(x, y, z); return this; }
+        public Builder WithDesignatorOrientation(double x, double y, double z) { _designatorOrientation = new Vector3Double(x, y, z); return this; }
+        public Builder WithEntityLocation(double x, double y, double z) { _entityLocation = new Vector3Double(x, y, z); return this; }
+        public Builder WithDesignatorCode(byte code) { _designatorCode = code; return this; }
+        public Builder WithDesignatorOutput(byte output) { _designatorOutput = output; return this; }
         public Builder WithSimulationFederation(byte sim, byte fed) { _simulationRef = sim; _federationRef = fed; return this; }
 
-        public FirePdu Build() => new(
+        public DesignatorPdu Build() => new(
             _entityId,
             _targetEntityId,
-            _munitionId,
-            _eventId,
-            _fireMissionIndex,
-            _location,
-            _velocity,
+            _designatorLocation,
+            _designatorOrientation,
+            _entityLocation,
+            _designatorCode,
+            _designatorOutput,
             _simulationRef,
             _federationRef
         );
