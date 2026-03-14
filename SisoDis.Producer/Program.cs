@@ -109,6 +109,10 @@ internal static class Program
             {
                 DesignatorDialog(state);
             }
+            else if (key == Key.Delete)
+            {
+                RemoveSelectedEntity(state);
+            }
         };
 
         Application.Run(top);
@@ -137,7 +141,7 @@ internal static class Program
             X = 0,
             Y = 0,
             Width = 50,
-            Height = 10,
+            Height = 11,
             ColorScheme = frameScheme,
         };
 
@@ -147,7 +151,8 @@ internal static class Program
 
         var patternLabel = new Label { Text = "Pattern:", X = 1, Y = 1 };
         var patternField = new TextField { Text = "Linear", X = 12, Y = 1, Width = 15, ColorScheme = draculaScheme };
-        controlFrame.Add(patternLabel, patternField);
+        var patternHint = new Label { Text = "(Stationary, Linear, Circle)", X = 1, Y = 2, ColorScheme = draculaScheme };
+        controlFrame.Add(patternLabel, patternField, patternHint);
 
         var speedLabel = new Label { Text = "Speed:", X = 1, Y = 2 };
         var speedField = new TextField { Text = "10", X = 12, Y = 2, Width = 10, ColorScheme = draculaScheme };
@@ -162,7 +167,7 @@ internal static class Program
         state.SpeedField = speedField;
         state.RateField = rateField;
 
-        controlFrame.Add(new Label { Text = "[Enter] Add [F2] Fire [F5] Start [F6] Stop", X = 1, Y = 6 });
+        controlFrame.Add(new Label { Text = "[Enter] Add [Del] Remove [F2] Fire [F5] Start [F6] Stop", X = 1, Y = 7 });
 
         top.Add(controlFrame);
 
@@ -212,7 +217,7 @@ internal static class Program
 
         var statusBar = new Label
         {
-            Text = "Entities: 0 | PDUs: 0 | F5:Start F6:Stop Enter:Add F2:Fire F3:Munition F4:Designator",
+            Text = "Entities: 0 | PDUs: 0 | F5:Start F6:Stop [Ent]Add [Del]Rem F2:Fire F3:Mun F4:Desig",
             Y = Pos.AnchorEnd(1),
             Width = Dim.Fill(),
             Height = 1,
@@ -383,6 +388,13 @@ internal static class Program
 
         if (int.TryParse(state.EntityIdField.Text, out int id) && id > 0)
         {
+            // Check for duplicate ID
+            if (state.Simulators.Any(s => s.EntityId == id))
+            {
+                AddLog(state, $"[ERROR] Entity ID {id} already exists!");
+                return;
+            }
+
             var patternStr = state.PatternField.Text ?? "Linear";
             var pattern = patternStr.ToLower() switch
             {
@@ -394,6 +406,12 @@ internal static class Program
             var sim = new EntitySimulator(id, pattern, new Vector3Double(0, (id - 1) * 100, 0), speed);
             state.Simulators.Add(sim);
             UpdateEntityList(state);
+            
+            // Auto-increment EntityId for next entity
+            var nextId = state.Simulators.Select(s => s.EntityId).DefaultIfEmpty(0).Max() + 1;
+            state.EntityIdField.Text = nextId.ToString();
+            
+            AddLog(state, $"[ADD] Entity ID:{id} Pattern:{pattern}");
         }
     }
 
@@ -432,7 +450,7 @@ internal static class Program
     private static void UpdateStatus(ProducerState state)
     {
         if (state.StatusBar == null) return;
-        state.StatusBar.Text = $"Entities: {state.Simulators.Count} | PDUs: {state.TotalPdusSent} | F5:Start F6:Stop Enter:Add F2:Fire F3:Munition F4:Designator";
+        state.StatusBar.Text = $"Entities: {state.Simulators.Count} | PDUs: {state.TotalPdusSent} | F5:Start F6:Stop [Ent]Add [Del]Rem F2:Fire F3:Mun F4:Desig";
     }
 
     private static void AddLog(ProducerState state, string message)
@@ -442,6 +460,20 @@ internal static class Program
         while (state.PduLog.Count > 100) state.PduLog.RemoveAt(0);
         var reversed = state.PduLog.AsEnumerable().Reverse().ToList();
         state.LogList.SetSource(new ObservableCollection<string>(reversed));
+    }
+
+    private static void RemoveSelectedEntity(ProducerState state)
+    {
+        if (state.EntityList == null || state.Simulators.Count == 0) return;
+        
+        var selectedIndex = state.EntityList.SelectedItem;
+        if (selectedIndex >= 0 && selectedIndex < state.Simulators.Count)
+        {
+            var removed = state.Simulators[selectedIndex];
+            state.Simulators.RemoveAt(selectedIndex);
+            UpdateEntityList(state);
+            AddLog(state, $"[REMOVE] Entity ID:{removed.EntityId}");
+        }
     }
 
     private static async Task RunProducerLoop(ProducerState state)
