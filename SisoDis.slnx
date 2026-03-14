@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="SisoDis.Producer/SisoDis.Producer.csproj" />
   <Project Path="SisoDis.Tests/SisoDis.Tests.csproj" />
   <Project Path="SisoDis/SisoDis.csproj" />
 </Solution>
