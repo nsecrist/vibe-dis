@@ -136,6 +136,9 @@ internal sealed class MulticastReceiver : IDisposable
                 5 => CollisionElasticPdu.Deserialize(data, 0),
                 6 => EntityStateUpdatePdu.Deserialize(data, 0),
                 7 => AttributePdu.Deserialize(data, 0),
+                20 => MunitionPdu.Deserialize(data, 0),
+                21 => DesignatorPdu.Deserialize(data, 0),
+                22 => ElectromagneticEmissionPdu.Deserialize(data, 0),
                 _ => null
             };
         }

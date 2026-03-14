@@ -101,6 +101,14 @@ internal static class Program
             {
                 FireDialog(state);
             }
+            else if (key == Key.F3)
+            {
+                MunitionDialog(state);
+            }
+            else if (key == Key.F4)
+            {
+                DesignatorDialog(state);
+            }
         };
 
         Application.Run(top);
@@ -204,7 +212,7 @@ internal static class Program
 
         var statusBar = new Label
         {
-            Text = "Entities: 0 | PDUs: 0 | F5:Start F6:Stop Enter:Add F2:Fire",
+            Text = "Entities: 0 | PDUs: 0 | F5:Start F6:Stop Enter:Add F2:Fire F3:Munition F4:Designator",
             Y = Pos.AnchorEnd(1),
             Width = Dim.Fill(),
             Height = 1,
@@ -267,6 +275,108 @@ internal static class Program
         Application.Run(dialog);
     }
 
+    private static void MunitionDialog(ProducerState state)
+    {
+        var dialog = new Window
+        {
+            Title = "Munition PDU",
+            Width = 45,
+            Height = 8,
+            X = Pos.Center(),
+            Y = Pos.Center(),
+        };
+
+        var targetLabel = new Label { Text = "Target ID:", X = 1, Y = 0 };
+        var targetField = new TextField { Text = "0", X = 12, Y = 0, Width = 10 };
+
+        var munitionLabel = new Label { Text = "Munition ID:", X = 1, Y = 1 };
+        var munitionField = new TextField { Text = "1", X = 12, Y = 1, Width = 10 };
+
+        var fireBtn = new Button { Text = "SEND", X = 5, Y = 3, Width = 8 };
+        var cancelBtn = new Button { Text = "Cancel", X = 15, Y = 3, Width = 8 };
+
+        fireBtn.Accept += (s, e) =>
+        {
+            if (int.TryParse(targetField.Text, out int targetId) &&
+                int.TryParse(munitionField.Text, out int munitionId))
+            {
+                var pdu = MunitionPdu.Create()
+                    .WithEntityId(EntityId.Relative(1))
+                    .WithTargetEntityId(EntityId.Relative(targetId))
+                    .WithMunitionId(EntityId.Relative(munitionId))
+                    .WithEventId(EntityId.Relative(1))
+                    .WithFireMissionIndex(1)
+                    .WithLocation(0, 0, 0)
+                    .WithVelocity(0, 0, 0)
+                    .WithSimulationFederation(1, 1)
+                    .Build();
+
+                pdu.Serialize(state.Buffer);
+                state.Sender.Send(state.Buffer.AsSpan(0, pdu.ComputedLength()));
+                state.TotalPdusSent++;
+                AddLog(state, $"[MUNITION] Target:{targetId} Munition:{munitionId}");
+                UpdateStatus(state);
+            }
+            Application.RequestStop();
+        };
+
+        cancelBtn.Accept += (s, e) => Application.RequestStop();
+
+        dialog.Add(targetLabel, targetField, munitionLabel, munitionField, fireBtn, cancelBtn);
+        Application.Run(dialog);
+    }
+
+    private static void DesignatorDialog(ProducerState state)
+    {
+        var dialog = new Window
+        {
+            Title = "Designator PDU",
+            Width = 45,
+            Height = 8,
+            X = Pos.Center(),
+            Y = Pos.Center(),
+        };
+
+        var targetLabel = new Label { Text = "Target ID:", X = 1, Y = 0 };
+        var targetField = new TextField { Text = "0", X = 12, Y = 0, Width = 10 };
+
+        var codeLabel = new Label { Text = "Code:", X = 1, Y = 1 };
+        var codeField = new TextField { Text = "1", X = 12, Y = 1, Width = 10 };
+
+        var sendBtn = new Button { Text = "SEND", X = 5, Y = 3, Width = 8 };
+        var cancelBtn = new Button { Text = "Cancel", X = 15, Y = 3, Width = 8 };
+
+        sendBtn.Accept += (s, e) =>
+        {
+            if (int.TryParse(targetField.Text, out int targetId) &&
+                byte.TryParse(codeField.Text, out byte code))
+            {
+                var pdu = DesignatorPdu.Create()
+                    .WithEntityId(EntityId.Relative(1))
+                    .WithTargetEntityId(EntityId.Relative(targetId))
+                    .WithDesignatorLocation(0, 0, 0)
+                    .WithDesignatorOrientation(0, 0, 0)
+                    .WithEntityLocation(0, 0, 0)
+                    .WithDesignatorCode(code)
+                    .WithDesignatorOutput(100)
+                    .WithSimulationFederation(1, 1)
+                    .Build();
+
+                pdu.Serialize(state.Buffer);
+                state.Sender.Send(state.Buffer.AsSpan(0, pdu.ComputedLength()));
+                state.TotalPdusSent++;
+                AddLog(state, $"[DESIGNATOR] Target:{targetId} Code:{code}");
+                UpdateStatus(state);
+            }
+            Application.RequestStop();
+        };
+
+        cancelBtn.Accept += (s, e) => Application.RequestStop();
+
+        dialog.Add(targetLabel, targetField, codeLabel, codeField, sendBtn, cancelBtn);
+        Application.Run(dialog);
+    }
+
     private static void AddEntityFromFields(ProducerState state)
     {
         if (state.EntityIdField == null || state.PatternField == null || state.SpeedField == null) return;
@@ -322,7 +432,7 @@ internal static class Program
     private static void UpdateStatus(ProducerState state)
     {
         if (state.StatusBar == null) return;
-        state.StatusBar.Text = $"Entities: {state.Simulators.Count} | PDUs: {state.TotalPdusSent} | F5:Start F6:Stop Enter:Add F2:Fire";
+        state.StatusBar.Text = $"Entities: {state.Simulators.Count} | PDUs: {state.TotalPdusSent} | F5:Start F6:Stop Enter:Add F2:Fire F3:Munition F4:Designator";
     }
 
     private static void AddLog(ProducerState state, string message)
