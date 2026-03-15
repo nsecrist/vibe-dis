@@ -120,5 +120,41 @@ public sealed class PduFactory
         // Register Data Query PDU (Type code = 30) - IEEE §5.3.6.8 Table 5-4
         if (!IsRegistered(DataQueryPdu.PdTypeValue))
             RegisterPduType(DataQueryPdu.PdTypeValue, typeof(DataQueryPdu));
+
+        // Register Service Request PDU (Type code = 40) - IEEE §5.3.8.1 Table 5-4
+        if (!IsRegistered(ServiceRequestPdu.PdTypeValue))
+            RegisterPduType(ServiceRequestPdu.PdTypeValue, typeof(ServiceRequestPdu));
+
+        // Register Resupply Offer PDU (Type code = 41) - IEEE §5.3.8.2 Table 5-4
+        if (!IsRegistered(ResupplyOfferPdu.PdTypeValue))
+            RegisterPduType(ResupplyOfferPdu.PdTypeValue, typeof(ResupplyOfferPdu));
+
+        // Register Resupply Received PDU (Type code = 42) - IEEE §5.3.8.3 Table 5-4
+        if (!IsRegistered(ResupplyReceivedPdu.PdTypeValue))
+            RegisterPduType(ResupplyReceivedPdu.PdTypeValue, typeof(ResupplyReceivedPdu));
+
+        // Register Resupply Cancel PDU (Type code = 43) - IEEE §5.3.8.4 Table 5-4
+        if (!IsRegistered(ResupplyCancelPdu.PdTypeValue))
+            RegisterPduType(ResupplyCancelPdu.PdTypeValue, typeof(ResupplyCancelPdu));
+
+        // Register Repair Response PDU (Type code = 44) - IEEE §5.3.8.5 Table 5-4
+        if (!IsRegistered(RepairResponsePdu.PdTypeValue))
+            RegisterPduType(RepairResponsePdu.PdTypeValue, typeof(RepairResponsePdu));
+
+        // Register Repair Complete PDU (Type code = 45) - IEEE §5.3.8.6 Table 5-4
+        if (!IsRegistered(RepairCompletePdu.PdTypeValue))
+            RegisterPduType(RepairCompletePdu.PdTypeValue, typeof(RepairCompletePdu));
+
+        // Register Breakout Request PDU (Type code = 46) - IEEE §5.3.8.7 Table 5-4
+        if (!IsRegistered(BreakoutRequestPdu.PdTypeValue))
+            RegisterPduType(BreakoutRequestPdu.PdTypeValue, typeof(BreakoutRequestPdu));
+
+        // Register Breakout Response PDU (Type code = 47) - IEEE §5.3.8.8 Table 5-4
+        if (!IsRegistered(BreakoutResponsePdu.PdTypeValue))
+            RegisterPduType(BreakoutResponsePdu.PdTypeValue, typeof(BreakoutResponsePdu));
+
+        // Register Breakout Cancel PDU (Type code = 48) - IEEE §5.3.8.9 Table 5-4
+        if (!IsRegistered(BreakoutCancelPdu.PdTypeValue))
+            RegisterPduType(BreakoutCancelPdu.PdTypeValue, typeof(BreakoutCancelPdu));
     }
 }

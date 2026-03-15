@@ -125,6 +125,15 @@ foreach (var (code, type) in all)
 | Munition | 20 | `MunitionPdu` | §5.3.10 |
 | Designator | 21 | `DesignatorPdu` | §5.3.11 |
 | Electromagnetic Emission | 22 | `ElectromagneticEmissionPdu` | §5.3.12 |
+| Service Request | 40 | `ServiceRequestPdu` | §5.3.8.1 |
+| Resupply Offer | 41 | `ResupplyOfferPdu` | §5.3.8.2 |
+| Resupply Received | 42 | `ResupplyReceivedPdu` | §5.3.8.3 |
+| Resupply Cancel | 43 | `ResupplyCancelPdu` | §5.3.8.4 |
+| Repair Response | 44 | `RepairResponsePdu` | §5.3.8.5 |
+| Repair Complete | 45 | `RepairCompletePdu` | §5.3.8.6 |
+| Breakout Request | 46 | `BreakoutRequestPdu` | §5.3.8.7 |
+| Breakout Response | 47 | `BreakoutResponsePdu` | §5.3.8.8 |
+| Breakout Cancel | 48 | `BreakoutCancelPdu` | §5.3.8.9 |
 
 ## PDU Examples
 
@@ -437,6 +446,112 @@ var dataQueryPdu = DataQueryPdu.Create()
     .WithNumberOfVariableDatum(0)
     .WithSimulationFederation(1, 1)
     .Build();
+```
+
+### Logistics PDUs
+
+The Logistics family (types 40-48) handles resupply, repair, and breakout operations between entities.
+
+```csharp
+// Service Request - Request logistic services (resupply, repair, etc.)
+var serviceReqPdu = ServiceRequestPdu.Create()
+    .WithRequestingEntityId(EntityId.Relative(100))
+    .WithSupplyType(1)          // 0=Class I, 1=Class II, etc.
+    .WithQuantity(500)          // Amount requested
+    .WithRequestId(1)
+    .WithServiceTypeRequested(1) // 1=Resupply, 2=Repair, 3=Breakout
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Resupply Offer - Supplier's response to a service request
+var resupplyOfferPdu = ResupplyOfferPdu.Create()
+    .WithReceivingEntityId(EntityId.Relative(100))
+    .WithSupplyType(1)
+    .WithQuantity(450)          // Amount actually provided
+    .WithRequestId(1)
+    .WithNumberOfSupplyTypes(1)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Resupply Received - Confirm receipt of supplies
+var resupplyReceivedPdu = ResupplyReceivedPdu.Create()
+    .WithReceivingEntityId(EntityId.Relative(100))
+    .WithSupplyType(1)
+    .WithQuantity(450)
+    .WithRequestId(1)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Resupply Cancel - Cancel pending resupply request
+var resupplyCancelPdu = ResupplyCancelPdu.Create()
+    .WithRequestingEntityId(EntityId.Relative(100))
+    .WithSupplyType(1)
+    .WithRequestId(2)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Repair Response - Response to repair request
+var repairRespPdu = RepairResponsePdu.Create()
+    .WithReceivingEntityId(EntityId.Relative(100))
+    .WithRepairType(1)          // Repair type code
+    .WithRequestId(3)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Repair Complete - Confirm repair is finished
+var repairCompletePdu = RepairCompletePdu.Create()
+    .WithReceivingEntityId(EntityId.Relative(100))
+    .WithRepairType(1)
+    .WithRequestId(3)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Breakout Request - Request to separate from formation
+var breakoutReqPdu = BreakoutRequestPdu.Create()
+    .WithRequestingEntityId(EntityId.Relative(100))
+    .WithRequestId(4)
+    .WithNumberOfRequestedUnits(3)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Breakout Response - Response to breakout request
+var breakoutRespPdu = BreakoutResponsePdu.Create()
+    .WithRespondingEntityId(EntityId.Relative(200))
+    .WithRequestId(4)
+    .WithBreakoutResponseStatus(1) // 1=Accepted, 2=Rejected
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Breakout Cancel - Cancel pending breakout request
+var breakoutCancelPdu = BreakoutCancelPdu.Create()
+    .WithRequestingEntityId(EntityId.Relative(100))
+    .WithRequestId(5)
+    .WithNumberOfFixedDatum(0)
+    .WithNumberOfVariableDatum(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Round-trip serialization for any Logistics PDU
+byte[] buf = new byte[serviceReqPdu.ComputedLength()];
+serviceReqPdu.Serialize(buf);
+var rx = ServiceRequestPdu.Deserialize(buf);
+Console.WriteLine($"Service request from entity: {rx.RequestingEntityId.Value}");
 ```
 
 ## Applications
