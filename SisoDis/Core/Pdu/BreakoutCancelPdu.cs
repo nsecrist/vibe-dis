@@ -14,7 +14,7 @@ public record struct BreakoutCancelPdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 48;
+    public const ushort PdTypeValue = 53;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

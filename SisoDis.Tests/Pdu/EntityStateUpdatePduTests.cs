@@ -87,7 +87,7 @@ public sealed class EntityStateUpdatePduTests
     [Fact]
     public void EntityStateUpdatePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)6, EntityStateUpdatePdu.PdTypeValue);
+        Assert.Equal((ushort)20, EntityStateUpdatePdu.PdTypeValue);
     }
 
     [Fact]

@@ -32,7 +32,7 @@ public record struct AttributePdu(
     public readonly record struct AttributeData(ushort AttributeNumber, byte[] Data);
 
     /// <summary>PDU Type code for Attribute PDU per IEEE 1278.1-2012 Table 5-4.</summary>
-    public const ushort PdTypeValue = 7;
+    public const ushort PdTypeValue = 19;
 
     /// <inheritdoc/>
     public byte Magic => 1;

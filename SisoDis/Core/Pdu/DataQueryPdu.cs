@@ -17,7 +17,7 @@ public record struct DataQueryPdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 30;
+    public const ushort PdTypeValue = 18;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

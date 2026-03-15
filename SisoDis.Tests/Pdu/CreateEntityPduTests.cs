@@ -60,6 +60,6 @@ public sealed class CreateEntityPduTests
     [Fact]
     public void CreateEntityPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)23, CreateEntityPdu.PdTypeValue);
+        Assert.Equal((ushort)11, CreateEntityPdu.PdTypeValue);
     }
 }

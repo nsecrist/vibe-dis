@@ -35,7 +35,7 @@ public record struct CollisionElasticPdu(
     byte NumberOfParts) : IPdu
 {
     /// <summary>PDU Type code for Collision-Elastic PDU per IEEE 1278.1-2012 Table 5-4.</summary>
-    public const ushort PdTypeValue = 5;
+    public const ushort PdTypeValue = 50;
 
     /// <inheritdoc/>
     public byte Magic => 1;

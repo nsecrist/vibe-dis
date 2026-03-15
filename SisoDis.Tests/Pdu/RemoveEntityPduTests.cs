@@ -42,6 +42,6 @@ public sealed class RemoveEntityPduTests
     [Fact]
     public void RemoveEntityPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)24, RemoveEntityPdu.PdTypeValue);
+        Assert.Equal((ushort)12, RemoveEntityPdu.PdTypeValue);
     }
 }

@@ -80,6 +80,6 @@ public sealed class ElectromagneticEmissionPduTests
     [Fact]
     public void ElectromagneticEmissionPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)22, ElectromagneticEmissionPdu.PdTypeValue);
+        Assert.Equal((ushort)23, ElectromagneticEmissionPdu.PdTypeValue);
     }
 }

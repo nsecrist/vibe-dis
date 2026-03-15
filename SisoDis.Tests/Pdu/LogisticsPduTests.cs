@@ -100,7 +100,7 @@ public sealed class ServiceRequestPduTests
     [Fact]
     public void ServiceRequestPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)40, ServiceRequestPdu.PdTypeValue);
+        Assert.Equal((ushort)5, ServiceRequestPdu.PdTypeValue);
     }
 }
 
@@ -158,7 +158,7 @@ public sealed class ResupplyOfferPduTests
     [Fact]
     public void ResupplyOfferPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)41, ResupplyOfferPdu.PdTypeValue);
+        Assert.Equal((ushort)6, ResupplyOfferPdu.PdTypeValue);
     }
 }
 
@@ -213,7 +213,7 @@ public sealed class ResupplyReceivedPduTests
     [Fact]
     public void ResupplyReceivedPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)42, ResupplyReceivedPdu.PdTypeValue);
+        Assert.Equal((ushort)7, ResupplyReceivedPdu.PdTypeValue);
     }
 }
 
@@ -265,7 +265,7 @@ public sealed class ResupplyCancelPduTests
     [Fact]
     public void ResupplyCancelPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)43, ResupplyCancelPdu.PdTypeValue);
+        Assert.Equal((ushort)8, ResupplyCancelPdu.PdTypeValue);
     }
 }
 
@@ -317,7 +317,7 @@ public sealed class RepairResponsePduTests
     [Fact]
     public void RepairResponsePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)44, RepairResponsePdu.PdTypeValue);
+        Assert.Equal((ushort)10, RepairResponsePdu.PdTypeValue);
     }
 }
 
@@ -369,7 +369,7 @@ public sealed class RepairCompletePduTests
     [Fact]
     public void RepairCompletePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)45, RepairCompletePdu.PdTypeValue);
+        Assert.Equal((ushort)9, RepairCompletePdu.PdTypeValue);
     }
 }
 
@@ -421,7 +421,7 @@ public sealed class BreakoutRequestPduTests
     [Fact]
     public void BreakoutRequestPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)46, BreakoutRequestPdu.PdTypeValue);
+        Assert.Equal((ushort)51, BreakoutRequestPdu.PdTypeValue);
     }
 }
 
@@ -473,7 +473,7 @@ public sealed class BreakoutResponsePduTests
     [Fact]
     public void BreakoutResponsePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)47, BreakoutResponsePdu.PdTypeValue);
+        Assert.Equal((ushort)52, BreakoutResponsePdu.PdTypeValue);
     }
 }
 
@@ -522,6 +522,6 @@ public sealed class BreakoutCancelPduTests
     [Fact]
     public void BreakoutCancelPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)48, BreakoutCancelPdu.PdTypeValue);
+        Assert.Equal((ushort)53, BreakoutCancelPdu.PdTypeValue);
     }
 }

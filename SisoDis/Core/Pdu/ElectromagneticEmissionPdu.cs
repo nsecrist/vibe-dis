@@ -20,7 +20,7 @@ public record struct ElectromagneticEmissionPdu(
 ) : IPdu
 {
     /// <summary>PDU Type code for Electromagnetic Emission PDU per IEEE 1278.1-2012 Table 5-4.</summary>
-    public const ushort PdTypeValue = 22;
+    public const ushort PdTypeValue = 23;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

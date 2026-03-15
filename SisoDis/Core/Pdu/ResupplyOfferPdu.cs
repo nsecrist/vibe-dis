@@ -17,7 +17,7 @@ public record struct ResupplyOfferPdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 41;
+    public const ushort PdTypeValue = 6;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

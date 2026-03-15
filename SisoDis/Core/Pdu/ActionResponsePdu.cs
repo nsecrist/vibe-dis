@@ -18,7 +18,7 @@ public record struct ActionResponsePdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 29;
+    public const ushort PdTypeValue = 17;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

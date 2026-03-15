@@ -17,7 +17,7 @@ public record struct RemoveEntityPdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 24;
+    public const ushort PdTypeValue = 12;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

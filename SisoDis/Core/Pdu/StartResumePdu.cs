@@ -18,7 +18,7 @@ public record struct StartResumePdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 25;
+    public const ushort PdTypeValue = 13;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

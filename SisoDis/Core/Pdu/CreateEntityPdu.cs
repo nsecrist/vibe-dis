@@ -17,7 +17,7 @@ public record struct CreateEntityPdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 23;
+    public const ushort PdTypeValue = 11;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

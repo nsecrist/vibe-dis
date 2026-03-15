@@ -39,7 +39,7 @@ public record struct EntityStateUpdatePdu(
     EntityStateUpdatePduAdditionalState AdditionalData) : IPdu
 {
     /// <summary>PDU Type code for Entity State Update PDU per IEEE 1278.1-2012 Table 5-4.</summary>
-    public const ushort PdTypeValue = 6;
+    public const ushort PdTypeValue = 20;
 
     /// <inheritdoc/>
     public byte Magic => 1;

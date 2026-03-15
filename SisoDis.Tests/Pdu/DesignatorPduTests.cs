@@ -84,6 +84,6 @@ public sealed class DesignatorPduTests
     [Fact]
     public void DesignatorPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)21, DesignatorPdu.PdTypeValue);
+        Assert.Equal((ushort)24, DesignatorPdu.PdTypeValue);
     }
 }

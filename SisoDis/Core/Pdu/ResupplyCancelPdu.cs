@@ -15,7 +15,7 @@ public record struct ResupplyCancelPdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 43;
+    public const ushort PdTypeValue = 8;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

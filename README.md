@@ -111,29 +111,29 @@ foreach (var (code, type) in all)
 | Fire | 2 | `FirePdu` | §5.3.3 |
 | Detonation | 3 | `DetonationPdu` | §5.3.4 |
 | Collision | 4 | `CollisionPdu` | §5.3.4 |
-| Collision-Elastic | 5 | `CollisionElasticPdu` | §5.3.5 |
-| Entity State Update | 6 | `EntityStateUpdatePdu` | §5.3.6 |
-| Attribute | 7 | `AttributePdu` | §5.3.7 |
-| Create Entity | 23 | `CreateEntityPdu` | §5.3.6.1 |
-| Remove Entity | 24 | `RemoveEntityPdu` | §5.3.6.2 |
-| Start/Resume | 25 | `StartResumePdu` | §5.3.6.3 |
-| Stop/Freeze | 26 | `StopFreezePdu` | §5.3.6.4 |
-| Acknowledge | 27 | `AcknowledgePdu` | §5.3.6.5 |
-| Action Request | 28 | `ActionRequestPdu` | §5.3.6.6 |
-| Action Response | 29 | `ActionResponsePdu` | §5.3.6.7 |
-| Data Query | 30 | `DataQueryPdu` | §5.3.6.8 |
+| Service Request | 5 | `ServiceRequestPdu` | §5.3.8.1 |
+| Resupply Offer | 6 | `ResupplyOfferPdu` | §5.3.8.2 |
+| Resupply Received | 7 | `ResupplyReceivedPdu` | §5.3.8.3 |
+| Resupply Cancel | 8 | `ResupplyCancelPdu` | §5.3.8.4 |
+| Repair Complete | 9 | `RepairCompletePdu` | §5.3.8.6 |
+| Repair Response | 10 | `RepairResponsePdu` | §5.3.8.5 |
+| Create Entity | 11 | `CreateEntityPdu` | §5.3.6.1 |
+| Remove Entity | 12 | `RemoveEntityPdu` | §5.3.6.2 |
+| Start/Resume | 13 | `StartResumePdu` | §5.3.6.3 |
+| Stop/Freeze | 14 | `StopFreezePdu` | §5.3.6.4 |
+| Acknowledge | 15 | `AcknowledgePdu` | §5.3.6.5 |
+| Action Request | 16 | `ActionRequestPdu` | §5.3.6.6 |
+| Action Response | 17 | `ActionResponsePdu` | §5.3.6.7 |
+| Data Query | 18 | `DataQueryPdu` | §5.3.6.8 |
+| Data | 19 | `AttributePdu` | §5.3.7 |
+| Entity State Update | 20 | `EntityStateUpdatePdu` | §5.3.6 |
 | Munition | 20 | `MunitionPdu` | §5.3.10 |
-| Designator | 21 | `DesignatorPdu` | §5.3.11 |
-| Electromagnetic Emission | 22 | `ElectromagneticEmissionPdu` | §5.3.12 |
-| Service Request | 40 | `ServiceRequestPdu` | §5.3.8.1 |
-| Resupply Offer | 41 | `ResupplyOfferPdu` | §5.3.8.2 |
-| Resupply Received | 42 | `ResupplyReceivedPdu` | §5.3.8.3 |
-| Resupply Cancel | 43 | `ResupplyCancelPdu` | §5.3.8.4 |
-| Repair Response | 44 | `RepairResponsePdu` | §5.3.8.5 |
-| Repair Complete | 45 | `RepairCompletePdu` | §5.3.8.6 |
-| Breakout Request | 46 | `BreakoutRequestPdu` | §5.3.8.7 |
-| Breakout Response | 47 | `BreakoutResponsePdu` | §5.3.8.8 |
-| Breakout Cancel | 48 | `BreakoutCancelPdu` | §5.3.8.9 |
+| Electromagnetic Emission | 23 | `ElectromagneticEmissionPdu` | §5.3.12 |
+| Designator | 24 | `DesignatorPdu` | §5.3.11 |
+| Collision-Elastic | 50 | `CollisionElasticPdu` | §5.3.5 |
+| Breakout Request | 51 | `BreakoutRequestPdu` | §5.3.8.7 |
+| Breakout Response | 52 | `BreakoutResponsePdu` | §5.3.8.8 |
+| Breakout Cancel | 53 | `BreakoutCancelPdu` | §5.3.8.9 |
 
 ## PDU Examples
 

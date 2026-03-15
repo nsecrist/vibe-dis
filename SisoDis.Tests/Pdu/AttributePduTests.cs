@@ -88,7 +88,7 @@ public sealed class AttributePduTests
     [Fact]
     public void AttributePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)7, AttributePdu.PdTypeValue);
+        Assert.Equal((ushort)19, AttributePdu.PdTypeValue);
     }
 
     [Fact]

@@ -18,7 +18,7 @@ public record struct StopFreezePdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 26;
+    public const ushort PdTypeValue = 14;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

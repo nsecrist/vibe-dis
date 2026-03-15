@@ -15,7 +15,7 @@ public record struct RepairResponsePdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 44;
+    public const ushort PdTypeValue = 10;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

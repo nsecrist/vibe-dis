@@ -15,7 +15,7 @@ public record struct BreakoutResponsePdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 47;
+    public const ushort PdTypeValue = 52;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

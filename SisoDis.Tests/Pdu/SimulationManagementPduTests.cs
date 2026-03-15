@@ -35,7 +35,7 @@ public sealed class StartResumePduTests
     [Fact]
     public void StartResumePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)25, StartResumePdu.PdTypeValue);
+        Assert.Equal((ushort)13, StartResumePdu.PdTypeValue);
     }
 }
 
@@ -66,7 +66,7 @@ public sealed class StopFreezePduTests
     [Fact]
     public void StopFreezePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)26, StopFreezePdu.PdTypeValue);
+        Assert.Equal((ushort)14, StopFreezePdu.PdTypeValue);
     }
 }
 
@@ -97,7 +97,7 @@ public sealed class AcknowledgePduTests
     [Fact]
     public void AcknowledgePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)27, AcknowledgePdu.PdTypeValue);
+        Assert.Equal((ushort)15, AcknowledgePdu.PdTypeValue);
     }
 }
 
@@ -128,7 +128,7 @@ public sealed class ActionRequestPduTests
     [Fact]
     public void ActionRequestPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)28, ActionRequestPdu.PdTypeValue);
+        Assert.Equal((ushort)16, ActionRequestPdu.PdTypeValue);
     }
 }
 
@@ -159,7 +159,7 @@ public sealed class ActionResponsePduTests
     [Fact]
     public void ActionResponsePdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)29, ActionResponsePdu.PdTypeValue);
+        Assert.Equal((ushort)17, ActionResponsePdu.PdTypeValue);
     }
 }
 
@@ -190,6 +190,6 @@ public sealed class DataQueryPduTests
     [Fact]
     public void DataQueryPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)30, DataQueryPdu.PdTypeValue);
+        Assert.Equal((ushort)18, DataQueryPdu.PdTypeValue);
     }
 }

@@ -16,7 +16,7 @@ public record struct AcknowledgePdu(
     byte FederationReference
 ) : IPdu
 {
-    public const ushort PdTypeValue = 27;
+    public const ushort PdTypeValue = 15;
 
     public byte Magic => 1;
     public byte ProtocolVersion => 3;

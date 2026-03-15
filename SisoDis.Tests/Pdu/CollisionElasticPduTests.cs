@@ -96,6 +96,6 @@ public sealed class CollisionElasticPduTests
     [Fact]
     public void CollisionElasticPdu_PduTypeValue_IsCorrect()
     {
-        Assert.Equal((ushort)5, CollisionElasticPdu.PdTypeValue);
+        Assert.Equal((ushort)50, CollisionElasticPdu.PdTypeValue);
     }
 }
