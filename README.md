@@ -524,16 +524,52 @@ dotnet run --project SisoDis.Receiver
 - Displays PDU type, entity ID, and timestamp
 - Auto-detects PDU type from header
 
+### SisoDis.WebReceiver
+
+A modern web-based application for receiving DIS PDUs.
+
+**Run:**
+```bash
+dotnet run --project SisoDis.WebReceiver
+```
+
+Then open http://localhost:5000 in your browser.
+
+**Features:**
+- Modern dark-themed web interface
+- Start/Stop receiver control
+- Real-time PDU log with type, entity ID, message, size
+- Statistics: total PDUs received, total bytes
+- Supported PDU types reference panel
+- Configurable multicast address and port
+
+**API Endpoints:**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/start` | POST | Start listening |
+| `/api/stop` | POST | Stop listening |
+| `/api/config` | POST | Update network config |
+| `/api/status` | GET | Get receiver status |
+| `/api/log` | GET | Get PDU log |
+| `/api/log` | DELETE | Clear PDU log |
+| `/api/pdu-types` | GET | List supported PDU types |
+
 ### Integration Testing
 
 Use the provided script to run Producer and Receiver together in tmux:
 
 ```bash
-# Console producer
+# Console producer + Console receiver (default)
 ./test-integration.sh
 
-# Web producer
+# Web producer + Console receiver
 ./test-integration.sh web
+
+# Web producer + Web receiver
+./test-integration.sh web:web
+
+# Console producer + Web receiver
+./test-integration.sh :web
 ```
 
 ## Error Handling
