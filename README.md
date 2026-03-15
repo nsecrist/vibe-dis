@@ -130,6 +130,9 @@ foreach (var (code, type) in all)
 | Munition | 20 | `MunitionPdu` | §5.3.10 |
 | Electromagnetic Emission | 23 | `ElectromagneticEmissionPdu` | §5.3.12 |
 | Designator | 24 | `DesignatorPdu` | §5.3.11 |
+| Transmitter | 25 | `TransmitterPdu` | §5.3.13 |
+| Signal | 26 | `SignalPdu` | §5.3.14 |
+| Receiver | 27 | `ReceiverPdu` | §5.3.15 |
 | Collision-Elastic | 50 | `CollisionElasticPdu` | §5.3.5 |
 | Breakout Request | 51 | `BreakoutRequestPdu` | §5.3.8.7 |
 | Breakout Response | 52 | `BreakoutResponsePdu` | §5.3.8.8 |
@@ -552,6 +555,57 @@ byte[] buf = new byte[serviceReqPdu.ComputedLength()];
 serviceReqPdu.Serialize(buf);
 var rx = ServiceRequestPdu.Deserialize(buf);
 Console.WriteLine($"Service request from entity: {rx.RequestingEntityId.Value}");
+```
+
+### Radio Communications PDUs
+
+The Radio Communications family (types 25-27) handles transmission, signal data, and receiver state for entity radios.
+
+```csharp
+// Transmitter PDU - Announce radio transmitter parameters
+var transmitterPdu = TransmitterPdu.Create()
+    .WithEntityId(EntityId.Relative(100))
+    .WithRadioId(1)
+    .WithRadioReference(100)
+    .WithTransmitState(1) // 0=Off, 1=On, 2=On-Backup
+    .WithInputSource(0)   // 0=Front Panel, 1=Data
+    .WithFrequency(225000000.0) // 225 MHz
+    .WithTransmitBandwidth(2000000.0) // 2 MHz
+    .WithPower(100) // 100 watts
+    .WithModulationType(1)
+    .WithCryptoSystem(0)
+    .WithAntennaLocation(new Vector3Double(0, 1.5, 0))
+    .WithAntennaPatternType(0)
+    .WithAntennaPatternCount(0)
+    .WithNumberOfModulationParameters(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Signal PDU - Transmit digital voice or data
+var signalPdu = SignalPdu.Create()
+    .WithEntityId(EntityId.Relative(100))
+    .WithRadioId(1)
+    .WithEncodingScheme(0)
+    .WithEncodingType(1) // 1=Voice, 2=Data
+    .WithData(new byte[] { 0x01, 0x02, 0x03, 0x04 })
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Receiver PDU - Report receiver status
+var receiverPdu = ReceiverPdu.Create()
+    .WithEntityId(EntityId.Relative(200))
+    .WithRadioId(1)
+    .WithReceiverState(2) // 1=Off, 2=On, 3=On-Alert
+    .WithAntennaLocation(new Vector3Double(0, 1.5, 0))
+    .WithRadioSystem(0)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Round-trip serialization for any Radio PDU
+byte[] radioBuf = new byte[transmitterPdu.ComputedLength()];
+transmitterPdu.Serialize(radioBuf);
+var rxTransmitter = TransmitterPdu.Deserialize(radioBuf);
+Console.WriteLine($"Transmitter frequency: {rxTransmitter.Frequency}");
 ```
 
 ## Applications

@@ -156,5 +156,17 @@ public sealed class PduFactory
         // Register Breakout Cancel PDU (Type code = 48) - IEEE §5.3.8.9 Table 5-4
         if (!IsRegistered(BreakoutCancelPdu.PdTypeValue))
             RegisterPduType(BreakoutCancelPdu.PdTypeValue, typeof(BreakoutCancelPdu));
+
+        // Register Transmitter PDU (Type code = 25) - IEEE §5.3.13 Table 5-4
+        if (!IsRegistered(TransmitterPdu.PdTypeValue))
+            RegisterPduType(TransmitterPdu.PdTypeValue, typeof(TransmitterPdu));
+
+        // Register Signal PDU (Type code = 26) - IEEE §5.3.14 Table 5-4
+        if (!IsRegistered(SignalPdu.PdTypeValue))
+            RegisterPduType(SignalPdu.PdTypeValue, typeof(SignalPdu));
+
+        // Register Receiver PDU (Type code = 27) - IEEE §5.3.15 Table 5-4
+        if (!IsRegistered(ReceiverPdu.PdTypeValue))
+            RegisterPduType(ReceiverPdu.PdTypeValue, typeof(ReceiverPdu));
     }
 }
