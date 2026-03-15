@@ -1,13 +1,19 @@
 #!/bin/bash
 # Integration test: runs Producer and Receiver in tmux for live viewing
+# Usage: ./test-integration.sh [console|web]
+#   console (default) - Run console Producer
+#   web             - Run web-based Producer
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+MODE="${1:-console}"
+
 echo "=============================================="
 echo "SisoDis.NET Integration Test (tmux)"
+echo "Mode: $MODE"
 echo "=============================================="
 echo ""
 
@@ -39,10 +45,23 @@ echo ""
 # Kill any existing processes
 echo "[2/3] Cleaning up stale processes..."
 pkill -f "SisoDis.Producer" 2>/dev/null || true
+pkill -f "SisoDis.WebProducer" 2>/dev/null || true
 pkill -f "SisoDis.Receiver" 2>/dev/null || true
 tmux kill-session -t siso 2>/dev/null || true
 sleep 1
 echo "      Done"
+echo ""
+
+# Determine producer command
+if [ "$MODE" = "web" ]; then
+    PRODUCER_CMD="dotnet run --project SisoDis.WebProducer"
+    PRODUCER_NAME="WebProducer"
+    echo "Starting with WEB producer..."
+else
+    PRODUCER_CMD="dotnet run --project SisoDis.Producer"
+    PRODUCER_NAME="Producer"
+    echo "Starting with CONSOLE producer..."
+fi
 echo ""
 
 # Create new tmux session
@@ -53,7 +72,7 @@ tmux new-session -d -s siso
 sleep 0.5
 
 # Start Producer in first pane
-tmux send-keys -t siso.0 "cd $SCRIPT_DIR && dotnet run --project SisoDis.Producer" C-m
+tmux send-keys -t siso.0 "cd $SCRIPT_DIR && $PRODUCER_CMD" C-m
 
 # Split horizontally and start Receiver in second pane
 tmux split-window -h -t siso.0
@@ -65,10 +84,14 @@ tmux select-pane -t siso.0
 
 echo ""
 echo "Controls:"
-echo "  Ctrl+B then 1 : Switch to Producer pane"
+echo "  Ctrl+B then 1 : Switch to $PRODUCER_NAME pane"
 echo "  Ctrl+B then 2 : Switch to Receiver pane"
 echo "  Ctrl+B then d : Detach (leave running)"
 echo "  tmux kill-session -t siso : Stop all"
+if [ "$MODE" = "web" ]; then
+    echo ""
+    echo "Web Producer URL: http://localhost:5000"
+fi
 echo ""
 
 # Attach to the session

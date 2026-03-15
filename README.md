@@ -439,6 +439,103 @@ var dataQueryPdu = DataQueryPdu.Create()
     .Build();
 ```
 
+## Applications
+
+This solution includes three applications for DIS simulation:
+
+### SisoDis.ConsoleProducer
+
+A Terminal.Gui based console application for producing DIS PDUs.
+
+**Run:**
+```bash
+dotnet run --project SisoDis.ConsoleProducer
+```
+
+**Features:**
+- Entity management with movement patterns (Linear, Stationary, Circle)
+- Real-time entity state PDU transmission
+- Fire, Munition, Designator PDU dialogs
+- Start/Resume and Stop/Freeze simulation control
+- Configurable multicast address and port
+- Auto-incrementing Entity IDs
+- Duplicate entity validation
+
+**Keyboard Shortcuts:**
+| Key | Action |
+|-----|--------|
+| Enter | Add entity |
+| Delete | Remove selected entity |
+| F2 | Fire PDU dialog |
+| F3 | Munition PDU dialog |
+| F4 | Designator PDU dialog |
+| F5 | Start simulation |
+| F6 | Stop simulation |
+| F7 | Start/Resume simulation PDU |
+| F8 | Stop/Freeze simulation PDU |
+| Ctrl+Q | Quit |
+
+### SisoDis.WebProducer
+
+A modern web-based application for producing DIS PDUs.
+
+**Run:**
+```bash
+dotnet run --project SisoDis.WebProducer
+```
+
+Then open http://localhost:5000 in your browser.
+
+**Features:**
+- Modern dark-themed web interface
+- Form controls for entity settings (dropdowns, inputs)
+- Real-time entity list with position updates
+- Start/Stop simulation control
+- Start/Resume and Stop/Freeze PDU buttons
+- Configurable multicast address, port, and rate
+- Activity log with PDU history
+
+**API Endpoints:**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/entities` | GET | List all entities |
+| `/api/entities` | POST | Add new entity |
+| `/api/entities/{id}` | DELETE | Remove entity |
+| `/api/start` | POST | Start simulation |
+| `/api/stop` | POST | Stop simulation |
+| `/api/sim/start` | POST | Send Start/Resume PDU |
+| `/api/sim/stop` | POST | Send Stop/Freeze PDU |
+| `/api/config` | POST | Update network config |
+| `/api/status` | GET | Get current status |
+| `/api/log` | GET | Get activity log |
+
+### SisoDis.Receiver
+
+A UDP multicast receiver that listens for DIS PDUs.
+
+**Run:**
+```bash
+dotnet run --project SisoDis.Receiver
+```
+
+**Features:**
+- Subscribes to configurable multicast address/port
+- Deserializes all implemented PDU types
+- Displays PDU type, entity ID, and timestamp
+- Auto-detects PDU type from header
+
+### Integration Testing
+
+Use the provided script to run Producer and Receiver together in tmux:
+
+```bash
+# Console producer
+./test-integration.sh
+
+# Web producer
+./test-integration.sh web
+```
+
 ## Error Handling
 
 ```csharp
