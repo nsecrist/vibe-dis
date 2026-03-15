@@ -133,6 +133,7 @@ foreach (var (code, type) in all)
 | Transmitter | 25 | `TransmitterPdu` | §5.3.13 |
 | Signal | 26 | `SignalPdu` | §5.3.14 |
 | Receiver | 27 | `ReceiverPdu` | §5.3.15 |
+| IFF/ATC/NAVAIDS | 28 | `IffPdu` | §5.3.16 |
 | Collision-Elastic | 50 | `CollisionElasticPdu` | §5.3.5 |
 | Breakout Request | 51 | `BreakoutRequestPdu` | §5.3.8.7 |
 | Breakout Response | 52 | `BreakoutResponsePdu` | §5.3.8.8 |
@@ -606,6 +607,41 @@ byte[] radioBuf = new byte[transmitterPdu.ComputedLength()];
 transmitterPdu.Serialize(radioBuf);
 var rxTransmitter = TransmitterPdu.Deserialize(radioBuf);
 Console.WriteLine($"Transmitter frequency: {rxTransmitter.Frequency}");
+```
+
+### IFF/ATC/NAVAIDS PDU
+
+Reports IFF (Identification Friend or Foe), ATC (Air Traffic Control), and NAVAIDS emission data per IEEE 1278.1-2012 §5.3.16.
+
+```csharp
+var iffData = new IffData[] 
+{
+    new IffData(
+        Modes: 1,                // Mode 1
+        SystemId: 100,
+        SystemType: 2,
+        SystemSubtype: 0,
+        FFCode: 12345,          // Friend-or-Foe code
+        Status: 0,
+        VariableParameterCount: 0
+    )
+};
+
+var iffPdu = IffPdu.Create()
+    .WithEntityId(EntityId.Relative(42))
+    .WithEmitterNumber(1)
+    .WithSystemData(iffData)
+    .WithNumberOfIFFFundamentalParameters(1)
+    .WithSimulationFederation(1, 1)
+    .Build();
+
+// Round-trip serialization
+byte[] iffBuf = new byte[iffPdu.ComputedLength()];
+iffPdu.Serialize(iffBuf);
+var rxIff = IffPdu.Deserialize(iffBuf);
+
+Console.WriteLine($"IFF from entity: {rxIff.EntityId.Value}");
+Console.WriteLine($"System data count: {rxIff.SystemDataCount}");
 ```
 
 ## Applications

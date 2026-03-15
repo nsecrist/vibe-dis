@@ -168,5 +168,9 @@ public sealed class PduFactory
         // Register Receiver PDU (Type code = 27) - IEEE §5.3.15 Table 5-4
         if (!IsRegistered(ReceiverPdu.PdTypeValue))
             RegisterPduType(ReceiverPdu.PdTypeValue, typeof(ReceiverPdu));
+
+        // Register IFF PDU (Type code = 28) - IEEE §5.3.16 Table 5-4
+        if (!IsRegistered(IffPdu.PdTypeValue))
+            RegisterPduType(IffPdu.PdTypeValue, typeof(IffPdu));
     }
 }
